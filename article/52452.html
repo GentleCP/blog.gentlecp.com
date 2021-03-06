@@ -1,0 +1,657 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210302203104.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  
+    <meta name="description" content="记录我的学习和生活">
+  
+  <meta name="author" content="GentleCP">
+  <meta name="keywords" content="">
+  
+  <title>scrapy快速上手 - 求索</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.gentlecp.com","root":"/","version":"1.8.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":"e327374203a31813ad9ef3899d6f3eb5","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>求索|CP</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://gitee.com/gentlecp/ImgUrl/raw/master/20210302191739.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="scrapy快速上手">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      GentleCP
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-06 18:16" pubdate>
+        2021年3月6日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      17
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">scrapy快速上手</h1>
+            
+            <div class="markdown-body">
+              <h1 id="Scrapy快速上手"><a href="#Scrapy快速上手" class="headerlink" title="Scrapy快速上手"></a>Scrapy快速上手</h1><h2 id="scrapy简介"><a href="#scrapy简介" class="headerlink" title="scrapy简介"></a>scrapy简介</h2><p><code>scrapy</code>是一款爬虫框架，相比于一般的基于<code>requests</code> 自行编写的爬虫，其特点主要包括：</p>
+<ul>
+<li><strong>系统化&amp;结构化</strong>：这意味着你编写的代码能够有很高的扩展性，维护更加容易，对于不擅长设计项目架构的童鞋帮助很大</li>
+<li><strong>高效率</strong>：<code>scrapy</code> 让你在编写程序的同时不需要考虑许多性能上的东西（例如多线程），这些<code>scrapy</code> 都已为你考虑好了，你真正需要关注的是爬虫的解析部分</li>
+<li><strong>一步到位</strong>：这里指的是一个完整的爬虫工作，包括页面下载-&gt;解析-&gt;过滤-&gt;存储几个基本步骤，<code>scrapy</code>都存在相应的模块进行处理，并且这些步骤之间的衔接也由<code>scrapy</code>完成，让你摆脱数据在不同阶段传输的焦虑</li>
+</ul>
+<p><code>scrapy</code>官方文档对于scrapy有着非常鲜明的解释了，包括<strong>一个基础的教程</strong>，<strong>各个模块具体的功能</strong>，以及一些<strong>高级操作</strong>，本文档的目的旨在：<strong>快速上手，略过一些不必要的细节，实现让一个小白也能根据文档快速实现利用<code>scrapy</code>实现一个完整的爬虫。</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.scrapy.org/en/latest/intro/tutorial.html">官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://scrapy-docs.readthedocs.io/zh/latest/intro/tutorial.html">中文文档</a></li>
+</ul>
+<h2 id="一个简单的例子"><a href="#一个简单的例子" class="headerlink" title="一个简单的例子"></a>一个简单的例子</h2><blockquote>
+<p>快速上手一个项目的方式就是跑通一个小例子，一方面简洁的程序能更容易理解，另一方面跑通程序能够提高我们对项目的研究兴趣，下面的例子实现的功能是访问请求：<a target="_blank" rel="noopener" href="http://quotes.toscrape.com/page/1/，将该页面每个方框内的**文字、作者、标签**信息提取出来，并存储成`json">http://quotes.toscrape.com/page/1/，将该页面每个方框内的**文字、作者、标签**信息提取出来，并存储成`json</a> lines`的形式。</p>
+</blockquote>
+<ul>
+<li>创建一个<code>scrapy</code>项目：<code>scrapy startproject tutorial</code>，你将得到如下结构的项目，目前不必纠结每个文件目录是干什么的</li>
+</ul>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python">tutorial<span class="token operator">/</span>
+    scrapy<span class="token punctuation">.</span>cfg            <span class="token comment"># deploy configuration file</span>
+    tutorial<span class="token operator">/</span>             <span class="token comment"># project's Python module, you'll import your code from here</span>
+        __init__<span class="token punctuation">.</span>py
+        items<span class="token punctuation">.</span>py          <span class="token comment"># project items definition file</span>
+        middlewares<span class="token punctuation">.</span>py    <span class="token comment"># project middlewares file</span>
+        pipelines<span class="token punctuation">.</span>py      <span class="token comment"># project pipelines file</span>
+        settings<span class="token punctuation">.</span>py       <span class="token comment"># project settings file</span>
+        spiders<span class="token operator">/</span>          <span class="token comment"># a directory where you'll later put your spiders</span>
+            __init__<span class="token punctuation">.</span>py<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<ul>
+<li>在根目录下创建一个<code>spider</code> (针对每一个不同的网站都要创建一个<code>spider</code>) ：<code>scrapy genspider quotes quotes.toscrape.com</code>,这会在<code>spiders</code>下创建一个新的文件，包含以下内容：</li>
+</ul>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> scrapy
+
+
+<span class="token keyword">class</span> <span class="token class-name">QuotesSpider</span><span class="token punctuation">(</span>scrapy<span class="token punctuation">.</span>Spider<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">"quotes"</span>
+    start_urls <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token string">'http://quotes.toscrape.com/page/1/'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+
+    <span class="token keyword">def</span> <span class="token function">parse</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">pass</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<blockquote>
+<p>这里有一些需要解释的，<code>start_urls</code> 是一个列表，包含了我们需要爬取的网址，同时也是起始网址，可以理解为爬虫入口，很多爬虫会从起始网址开始，一步步提取出更多的网址并进一步爬取，但是在这个例子中，我们只考虑单个网址。<code>parse</code> 是一个解析方法，它有一个参数<code>response</code> ，就是爬取<code>start_urls</code> 列表中的网址后得到的结果，你可以理解为<code>response=requests.get(url=start_requests[i]), i=0,1,2...</code>  ，<strong>注意</strong>，爬虫的核心代码就是从网页中解析出我们需要的数据，因此在你的爬虫文件中编写的其他函数（例如<code>parse_authro(self, response)</code>），应该也遵照这个思想：接收response，解析数据，<code>yield</code> 新请求。有点扯远了，继续下一步</p>
+</blockquote>
+<ul>
+<li>我们需要从<code>response</code>中解析出方框的内容，这来源于我们对于网页源代码的观察，如下图：</li>
+</ul>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210203181417.png" srcset="/img/loading.gif" alt="image-20210203181416969" style="zoom:50%;" /></p>
+<p>容易发现每个方框都是一个<code>class=&quot;quote&quot;</code> 的<code>div</code>标签，因此我们可以用如下的代码去解析其中的数据（代码运用了<code>css</code>解析，后面会详解，这里了解一下就好）</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> scrapy
+
+<span class="token keyword">class</span> <span class="token class-name">QuotesSpider</span><span class="token punctuation">(</span>scrapy<span class="token punctuation">.</span>Spider<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">"quotes"</span>
+    start_urls <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token string">'http://quotes.toscrape.com/page/1/'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+
+    <span class="token keyword">def</span> <span class="token function">parse</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> quote <span class="token keyword">in</span> response<span class="token punctuation">.</span>css<span class="token punctuation">(</span><span class="token string">'div.quote'</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">yield</span> <span class="token punctuation">&#123;</span>
+                <span class="token string">'text'</span><span class="token punctuation">:</span> quote<span class="token punctuation">.</span>css<span class="token punctuation">(</span><span class="token string">'span.text::text'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'author'</span><span class="token punctuation">:</span> quote<span class="token punctuation">.</span>css<span class="token punctuation">(</span><span class="token string">'small.author::text'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">'tags'</span><span class="token punctuation">:</span> quote<span class="token punctuation">.</span>css<span class="token punctuation">(</span><span class="token string">'div.tags a.tag::text'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>getall<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<blockquote>
+<p>上面的代码让我们遍历所有<code>div</code>标签，并从中提取出三个字段的内容，至此，我们的爬虫解析部分就写好了</p>
+</blockquote>
+<ul>
+<li>运行我们的爬虫很容易，直接执行代码:<code>scrapy crawl quotes -o res.jl</code>就可以看到我们的数据了</li>
+</ul>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210203182053.png" srcset="/img/loading.gif" alt="image-20210203182053647" style="zoom:50%;" /></p>
+<h2 id="scrapy运作机制"><a href="#scrapy运作机制" class="headerlink" title="scrapy运作机制"></a>scrapy运作机制</h2><p>pass</p>
+<h2 id="scrapy选择器：css与xpath使用"><a href="#scrapy选择器：css与xpath使用" class="headerlink" title="scrapy选择器：css与xpath使用"></a>scrapy选择器：css与xpath使用</h2><blockquote>
+<p>css&amp;xpath是scrapy中<code>response</code>解析提取数据的两种主要方式，在此之前，你一定用过例如<code>Beautifulsoup</code> 进行网页文本数据的解析，相比之下，<code>scrapy</code>内置的解析器效率要更高，因此强烈建议将这两种解析方法都掌握。下面的列表不会像官网一样一步步教你解析，更多的是一种功能式的查询，即回答<strong>我该怎么样获取我想要的数据</strong>的问题。</p>
+</blockquote>
+<h3 id="查找指定标签文本"><a href="#查找指定标签文本" class="headerlink" title="查找指定标签文本"></a>查找指定标签文本</h3><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">response.css(&#39;a::text&#39;)     
+response.xpath(&#39;&#x2F;&#x2F;a&#x2F;text()&#39;)   # 有多个标签返回多个<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<h3 id="查找指定标签的属性"><a href="#查找指定标签的属性" class="headerlink" title="查找指定标签的属性"></a>查找指定标签的属性</h3><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">response.css(&#39;a::attr(href)&#39;)
+response.xpath(&#39;&#x2F;&#x2F;a&#x2F;@href&#39;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<h3 id="查找指定属性为指定值的标签"><a href="#查找指定属性为指定值的标签" class="headerlink" title="查找指定属性为指定值的标签"></a>查找指定属性为指定值的标签</h3><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">response.css(&#39;a[href&#x3D;&quot;xxx&quot;]&#39;)   # 获取属性href&#x3D;xxx的a标签
+response.xpath(&#39;&#x2F;&#x2F;a[@href&#x3D;&quot;xxx&quot;]&#39;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<h3 id="查找指定属性包含指定值的标签"><a href="#查找指定属性包含指定值的标签" class="headerlink" title="查找指定属性包含指定值的标签"></a>查找指定属性包含指定值的标签</h3><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">response.css(&#39;a[href*&#x3D;&quot;xxx&quot;]&#39;)
+response.xpath(&#39;a[contains(@href, &quot;xxx&quot;)]&#39;)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<h3 id="查找文本为指定值的标签"><a href="#查找文本为指定值的标签" class="headerlink" title="查找文本为指定值的标签"></a>查找文本为指定值的标签</h3><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">response.xpath(&#39;&#x2F;&#x2F;a[text()&#x3D;&quot;xxx&quot;]&#39;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<h3 id="查找文本包含指定值的标签"><a href="#查找文本包含指定值的标签" class="headerlink" title="查找文本包含指定值的标签"></a>查找文本包含指定值的标签</h3><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">response.xpath(&#39;a[contains(text(), &quot;xxx&quot;)]&#39;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<p>当获取到标签之后，可以通过 <code>get()</code> , <code>getall()</code> 等方法提取需要的信息，或者在此基础上再进行标签的获取</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/python/">python</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/python/">python</a>
+                    
+                      <a class="hover-with-bg" href="/tags/scrapy/">scrapy</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/article/53311.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">py2neo 快速上手</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'GentleCP/blog.gentlecp.com');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://www.gentlecp.com" target="_blank" rel="nofollow noopener"><span>主站</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/GentleCP/blog.gentlecp.com" target="_blank" rel="nofollow noopener"><span>Repo</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        京ICP证123456号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" alt="police-icon"/>
+            
+            <span>浙ICP备19022407号-1</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
