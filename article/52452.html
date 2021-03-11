@@ -212,7 +212,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.4k 字
+      2.2k 字
     </span>
   
 
@@ -222,7 +222,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      17
+      27
        分钟
     </span>
   
@@ -349,6 +349,80 @@ response.xpath(&#39;a[contains(@href, &quot;xxx&quot;)]&#39;)<span aria-hidden="
 <h3 id="查找文本为指定值的标签"><a href="#查找文本为指定值的标签" class="headerlink" title="查找文本为指定值的标签"></a>查找文本为指定值的标签</h3><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">response.xpath(&#39;&#x2F;&#x2F;a[text()&#x3D;&quot;xxx&quot;]&#39;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
 <h3 id="查找文本包含指定值的标签"><a href="#查找文本包含指定值的标签" class="headerlink" title="查找文本包含指定值的标签"></a>查找文本包含指定值的标签</h3><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">response.xpath(&#39;a[contains(text(), &quot;xxx&quot;)]&#39;)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
 <p>当获取到标签之后，可以通过 <code>get()</code> , <code>getall()</code> 等方法提取需要的信息，或者在此基础上再进行标签的获取</p>
+<h2 id="文件-amp-图片下载"><a href="#文件-amp-图片下载" class="headerlink" title="文件&amp;图片下载"></a>文件&amp;图片下载</h2><p>有些时候我们希望爬虫不仅爬取文字信息，也要下载图片&amp;文件内容到本地，这个时候就需要用到<code>scrapy.pipelines.FilesPipeline</code>和<code>scrapy.pipelines.ImagePipeline</code> 了，它们分别定义了文件管道和图片管道。传统的下载方式是在<code>parse</code> 的时候加入下载链接到<code>item</code>中，然后调用下载函数（如<code>cptools.process.download_file</code>）指定下载并存储，但这种下载方式是阻塞式的，用<code>pipeline</code>的好处是可以异步下载，提高效率，主要的步骤如下：</p>
+<ol>
+<li>定义一个<code>Item</code>（可以是原本已有的），添加两个字段<code>files</code>,<code>file_urls</code>，后者是下载链接的列表（即一次可传入多个下载链接），前者是文件下载完成后存储的下载相关信息（如下载路径、url、校验码等）</li>
+<li>在<code>settings.py</code> 中设置变量<code>FILES_STORE</code>即存储路径，之后下载的内容都会存储在这个路径下，最终结果是<code>FILES_STORE/full/3afec3b4765f8f0a07b78f98c07b83f013567a0a</code>(最后一串是文件的sha1值命名的文件)</li>
+<li>在<code>settings.py</code>中启动<code>pipeline</code>：即<code>scrapy.pipelines.files.FilesPipeline:1</code> </li>
+</ol>
+<p>下图是一个例子：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># items.py</span>
+<span class="token keyword">class</span> <span class="token class-name">SFItem</span><span class="token punctuation">(</span>scrapy<span class="token punctuation">.</span>Item<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> scrapy<span class="token punctuation">.</span>Field<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 固件名称</span>
+    <span class="token comment"># 下载信息存储，下面字段必要</span>
+    file_urls <span class="token operator">=</span> scrapy<span class="token punctuation">.</span>Field<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    files <span class="token operator">=</span> scrapy<span class="token punctuation">.</span>Field<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># spiders</span>
+<span class="token keyword">def</span> <span class="token function">parse</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">:</span>
+		item <span class="token operator">=</span> SFItem<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    item<span class="token punctuation">[</span><span class="token string">'file_urls'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"https://download_url.zip"</span><span class="token punctuation">]</span>   <span class="token comment"># 注意要列表传入</span>
+    <span class="token keyword">yield</span> item
+    
+<span class="token comment"># settings.py</span>
+ITEM_PIPELINES <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token string">'IndustryInfoCrawler.pipelines.SFFilesPipeline'</span><span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+   <span class="token string">'IndustryInfoCrawler.pipelines.MongoPipeline'</span><span class="token punctuation">:</span> <span class="token number">300</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span>
+FILES_STORE <span class="token operator">=</span> <span class="token string">'root'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<blockquote>
+<p>上面的方式基本满足了对文件的下载操作，但有两点问题：</p>
+<ol>
+<li><p>下载路径我们只定义了根目录，如果我们相对文件分类，那怎么办</p>
+</li>
+<li><p>文件名sha1值是为了不重复，但可读性很差，我们希望能够自定义文件名</p>
+</li>
+</ol>
+</blockquote>
+<p>解决办法通过重写<code>Pipeline</code>实现，样例如下：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> scrapy<span class="token punctuation">.</span>pipelines<span class="token punctuation">.</span>images <span class="token keyword">import</span> FilesPipeline
+
+<span class="token keyword">class</span> <span class="token class-name">SFFilesPipeline</span><span class="token punctuation">(</span>FilesPipeline<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    自定义下载管道
+    """</span>
+    <span class="token keyword">def</span> <span class="token function">get_media_requests</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> item<span class="token punctuation">,</span> info<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> file_url <span class="token keyword">in</span> item<span class="token punctuation">[</span><span class="token string">'file_urls'</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+            <span class="token keyword">yield</span> scrapy<span class="token punctuation">.</span>Request<span class="token punctuation">(</span>image_url<span class="token punctuation">)</span>  <span class="token comment"># 请求下载</span>
+
+    <span class="token keyword">def</span> <span class="token function">file_path</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> request<span class="token punctuation">,</span> response<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> info<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> <span class="token operator">*</span><span class="token punctuation">,</span> item<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+        <span class="token comment"># parent = super().file_path(request, response, info)  # 获取父类目录</span>
+        SF_path <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>FILES_STORE<span class="token punctuation">,</span> <span class="token string">'SF'</span><span class="token punctuation">)</span>  <span class="token comment"># 在这里自定义存储的目录，也可以根据不同文件类型，自己设置分类目录</span>
+        <span class="token keyword">if</span> <span class="token keyword">not</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>exists<span class="token punctuation">(</span>SF_path<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            os<span class="token punctuation">.</span>mkdir<span class="token punctuation">(</span>SF_path<span class="token punctuation">)</span>
+        filename <span class="token operator">=</span> <span class="token string">'test.zip'</span>
+        <span class="token keyword">return</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>SF_path<span class="token punctuation">,</span> filename<span class="token punctuation">)</span>  <span class="token comment"># 返回结果为文件存储路径</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<ul>
+<li>文件到期：很多时候我们不希望重复对本地已有的文件进行下载操作，可以自定义下载管道中请求的时候检查本地文件是否存在，也可以通过设置文件到期时间（未到期的文件不会重复下载）</li>
+</ul>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># settings.py</span>
+<span class="token comment"># 120 days of delay for files expiration</span>
+FILES_EXPIRES <span class="token operator">=</span> <span class="token number">120</span>
+
+<span class="token comment"># 30 days of delay for images expiration</span>
+IMAGES_EXPIRES <span class="token operator">=</span> <span class="token number">30</span>
+
+<span class="token comment"># 如果存在自定义的文件管道，如上面的SFFilesPipeline，可以对单个子类管道设置到期时间，以子类名称大写开头</span>
+SFFILESPIPELINE_FILES_EXPIRES <span class="token operator">=</span> <span class="token number">120</span>   <span class="token comment"># 120天内不重复下载通过SFFilesPipeline的文件</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<blockquote>
+<p>还有一个注意点是，当下载文件过大，超出scrapy预期的话，会报警告，可以通过在<code>settings.py</code>中设置<code>DOWNLOAD_WARNSIZE = 0</code>去除</p>
+</blockquote>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/Zhihua_W/article/details/105200916">https://blog.csdn.net/Zhihua_W/article/details/105200916</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43343144/article/details/87908448">https://blog.csdn.net/weixin_43343144/article/details/87908448</a></li>
+<li><a target="_blank" rel="noopener" href="https://scrapy-docs.readthedocs.io/zh/latest/topics/media-pipeline.html?highlight=%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6">https://scrapy-docs.readthedocs.io/zh/latest/topics/media-pipeline.html?highlight=%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6</a></li>
+</ul>
 
             </div>
             <hr>
