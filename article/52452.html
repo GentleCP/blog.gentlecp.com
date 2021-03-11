@@ -355,7 +355,7 @@ response.xpath(&#39;a[contains(@href, &quot;xxx&quot;)]&#39;)<span aria-hidden="
 <li>在<code>settings.py</code> 中设置变量<code>FILES_STORE</code>即存储路径，之后下载的内容都会存储在这个路径下，最终结果是<code>FILES_STORE/full/3afec3b4765f8f0a07b78f98c07b83f013567a0a</code>(最后一串是文件的sha1值命名的文件)</li>
 <li>在<code>settings.py</code>中启动<code>pipeline</code>：即<code>scrapy.pipelines.files.FilesPipeline:1</code> </li>
 </ol>
-<p>下图是一个例子：</p>
+<p>下面是一个例子：</p>
 <div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># items.py</span>
 <span class="token keyword">class</span> <span class="token class-name">SFItem</span><span class="token punctuation">(</span>scrapy<span class="token punctuation">.</span>Item<span class="token punctuation">)</span><span class="token punctuation">:</span>
     name <span class="token operator">=</span> scrapy<span class="token punctuation">.</span>Field<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 固件名称</span>
@@ -398,11 +398,9 @@ FILES_STORE <span class="token operator">=</span> <span class="token string">'ro
 
     <span class="token keyword">def</span> <span class="token function">file_path</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> request<span class="token punctuation">,</span> response<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> info<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> <span class="token operator">*</span><span class="token punctuation">,</span> item<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
         <span class="token comment"># parent = super().file_path(request, response, info)  # 获取父类目录</span>
-        SF_path <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>FILES_STORE<span class="token punctuation">,</span> <span class="token string">'SF'</span><span class="token punctuation">)</span>  <span class="token comment"># 在这里自定义存储的目录，也可以根据不同文件类型，自己设置分类目录</span>
-        <span class="token keyword">if</span> <span class="token keyword">not</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>exists<span class="token punctuation">(</span>SF_path<span class="token punctuation">)</span><span class="token punctuation">:</span>
-            os<span class="token punctuation">.</span>mkdir<span class="token punctuation">(</span>SF_path<span class="token punctuation">)</span>
+        SF_path <span class="token operator">=</span>  <span class="token string">'SF'</span> <span class="token comment"># 在这里自定义存储的目录，也可以根据不同文件类型，自己设置分类目录</span>
         filename <span class="token operator">=</span> <span class="token string">'test.zip'</span>
-        <span class="token keyword">return</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>SF_path<span class="token punctuation">,</span> filename<span class="token punctuation">)</span>  <span class="token comment"># 返回结果为文件存储路径</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+        <span class="token keyword">return</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>SF_path<span class="token punctuation">,</span> filename<span class="token punctuation">)</span>  <span class="token comment"># 返回结果为文件存储路径，最终结果是在根目录下存储`FILES_STORE/SF_PATH/filename`</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
 <ul>
 <li>文件到期：很多时候我们不希望重复对本地已有的文件进行下载操作，可以自定义下载管道中请求的时候检查本地文件是否存在，也可以通过设置文件到期时间（未到期的文件不会重复下载）</li>
 </ul>
