@@ -276,19 +276,6 @@
   
   
   <entry>
-    <title>Hello CP</title>
-    <link href="/article/10116.html"/>
-    <url>/article/10116.html</url>
-    
-    <content type="html"><![CDATA[<h1 id="你好，CP"><a href="#你好，CP" class="headerlink" title="你好，CP"></a>你好，CP</h1><p>这是我继<a href="https://www.gentlecp.com">求索博客</a>后，重新打造的一个博客，用于分享我个人的学习经验和生活感悟，原博客大概率还会保留（同步这里的内容），但主要创作的内容会向本博客迁移，原因主要有几点：  </p><ol><li>原博客基于<code>wordpress</code>,虽然功能很强大，但同时也造成了博客的臃肿，加载的时候缓慢，现有博客基于<code>hexo</code>，静态资源加载更快</li><li>原博客的文章内容直接保存在服务器上，虽然也能导出，但数据不是原始的md文件，这不利于我的迁移工作，现博客的数据都直接存储在<code>github</code>，安全又方便</li><li>除去花里胡哨的，做核心的内容。正如博客标语中写的，<code>Simple is the best!</code>，在本博客中，将致力于将文章内容创作地更好，将其他细枝末节的东西忽略</li><li>一次全新的尝试</li></ol><p>新的学期，希望能够写出更多优质的文章，提升自己，帮助更多人。</p>]]></content>
-    
-    
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>py2neo 快速上手</title>
     <link href="/article/53311.html"/>
     <url>/article/53311.html</url>
