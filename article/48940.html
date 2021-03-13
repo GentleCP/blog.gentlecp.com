@@ -1,0 +1,1383 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210302203104.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  
+    <meta name="description" content="记录我的学习和生活">
+  
+  <meta name="author" content="GentleCP">
+  <meta name="keywords" content="">
+  
+  <title>Linux 常用命令大全 - 求索</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.gentlecp.com","root":"/","version":"1.8.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":"e327374203a31813ad9ef3899d6f3eb5","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>求索|CP</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://gitee.com/gentlecp/ImgUrl/raw/master/20210302191739.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Linux 常用命令大全">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      GentleCP
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-13 10:52" pubdate>
+        2021年3月13日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      67
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Linux 常用命令大全</h1>
+            
+            <div class="markdown-body">
+              <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文记录了Linux操作系统中常用的命令以及对应参数，方便使用的时候进行查询，主要参考<code>541137 Linux命令行与shell脚本编程大全.第3版</code>一书，后面还有许多高级的内容，但日常的linux使用下面涉及的已经足够。本文的正确打开方式是作为字典式的命令查询，不建议将这些命令一一背住，只需了解基础的几个就好。 </p>
+<blockquote>
+<p>部分复杂内容添加了配图方便理解，也可以前往我的<a target="_blank" rel="noopener" href="https://www.gentlecp.com/articles/676.html">个人博客</a>阅读原文</p>
+</blockquote>
+<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><h2 id="查看文件ls命令"><a href="#查看文件ls命令" class="headerlink" title="查看文件ls命令"></a>查看文件ls命令</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">ls -F  # 用于区分文件和目录
+ls -a  # 显示隐藏目录和文件
+ls -R  # 递归显示文件和目录
+ls -l  # 显示长列表，包含更多信息
+ls -l file_name  
+# 过滤显示，可以用?代替一个字符，*代替零个或多个
+[a-z]表示a-z任一个，！后跟字符表示除这个字符外，！需放置在[]中<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="创建文件touch命令"><a href="#创建文件touch命令" class="headerlink" title="创建文件touch命令"></a>创建文件touch命令</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">touch file_name # 创建一个文件，若无则创建，若有则修改文件的修改时间
+touch -a file_name # 只修改文件的访问时间<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<p>要查看访问时间用以下命令<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">ls -l --time&#x3D;atime<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></p>
+<h2 id="复制文件"><a href="#复制文件" class="headerlink" title="复制文件"></a>复制文件</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">cp source destination  # 如果目标文件已存在会强制覆盖
+cp -i source destination  # 询问是否覆盖
+cp file dir&#x2F;  # 如果不指定拷贝的文件，只是复制到dir目录下，需要加上&#x2F;
+cp -R dir1&#x2F; dir2  # 递归复制文件夹<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="链接文件"><a href="#链接文件" class="headerlink" title="链接文件"></a>链接文件</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">ln -s source destination  # 符号链接，结果：destination-&gt;source,相当于快捷方式
+ln source destination  # 硬链接，两个相同的文件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<h2 id="移动文件"><a href="#移动文件" class="headerlink" title="移动文件"></a>移动文件</h2><p>类似copy<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">mv source destination  # 可以重命名<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></p>
+<h2 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">rm -i file  # 建议添加-i询问是否删除，以免误删，因为不能撤销
+rm -r dir&#x2F;  # 删除文件夹
+加f参数是强制删除，慎用！！<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="查看文件-类型"><a href="#查看文件-类型" class="headerlink" title="查看文件/类型"></a>查看文件/类型</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">file file_name  # 查看文件内部，给出文件类型，包括编码方式
+file dir  # 区分目录
+cat file_name  # 查看文件内容
+cat -n file_name  # 给所有行加上行号
+cat -b file_name  # 给有文本的行加上行号
+more file_name  # 查看文件内容，包含文件所属位置，在每页数据停下
+tail file_name  # 显示文件最后几行，默认10行
+tail -n 3 file_name  # 显示最后3行，也可以直接把n换成3
+tail -f file_name  # 动态查看最后几行，如果有其他进程对文件修改，则会动态加载，用于监视系统日志
+head file_name  # 显示开头几行，默认10行，除了-f其余属性与tail相同<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="Linux命令行图谱"><a href="#Linux命令行图谱" class="headerlink" title="Linux命令行图谱"></a>Linux命令行图谱</h2><p><img src="https://img-blog.csdnimg.cn/20200302133009486.png#pic_center =500x250" srcset="/img/loading.gif" alt=""></p>
+<h1 id="进程操作"><a href="#进程操作" class="headerlink" title="进程操作"></a>进程操作</h1><p>本章比较复杂，添加了图片做说明</p>
+<h2 id="查看进程"><a href="#查看进程" class="headerlink" title="查看进程"></a>查看进程</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">ps -ef  # 显示系统上运行的所有进程，-e指定显示所有运行在系统上的进程，-f扩展了输出<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<p><img src="https://img-blog.csdnimg.cn/2020030213303494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0dlbnRsZUNQ,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" style="zoom:50%;" /></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">名称</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">UID</td>
+<td style="text-align:center">启动这些进程的用户</td>
+</tr>
+<tr>
+<td style="text-align:center">PID</td>
+<td style="text-align:center">进程ID</td>
+</tr>
+<tr>
+<td style="text-align:center">PPID</td>
+<td style="text-align:center">父进程的进程ID</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">进程生命周期中的CPU利用率</td>
+</tr>
+<tr>
+<td style="text-align:center">STIME</td>
+<td style="text-align:center">进程启动时的系统时间</td>
+</tr>
+<tr>
+<td style="text-align:center">TTY</td>
+<td style="text-align:center">进程启动时的终端设备</td>
+</tr>
+<tr>
+<td style="text-align:center">TIME</td>
+<td style="text-align:center">运行进程需要的累计CPU时间</td>
+</tr>
+<tr>
+<td style="text-align:center">CMD</td>
+<td style="text-align:center">启动的程序名称</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">ps -l  # 产生一个长格式的输出<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<p><img src="https://img-blog.csdnimg.cn/2020030213305614.png" srcset="/img/loading.gif" alt=""></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">名称</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">F</td>
+<td style="text-align:center">内核分配给进程的系统标记</td>
+</tr>
+<tr>
+<td style="text-align:center">S</td>
+<td style="text-align:center">进程的状态（O：运行；S：休眠；R：可运行,正等待运行；Z：僵化,进程已结束但父进程已不存在；T:停止）</td>
+</tr>
+<tr>
+<td style="text-align:center">PRI</td>
+<td style="text-align:center">进程的优先级</td>
+</tr>
+<tr>
+<td style="text-align:center">NI</td>
+<td style="text-align:center">谦让度值用来参与决定优先级</td>
+</tr>
+<tr>
+<td style="text-align:center">ADDR</td>
+<td style="text-align:center">进程的内存地址</td>
+</tr>
+<tr>
+<td style="text-align:center">SZ</td>
+<td style="text-align:center">假如进程被换出，所需交换空间的大致大小</td>
+</tr>
+<tr>
+<td style="text-align:center">WCHAN</td>
+<td style="text-align:center">进程休眠的内核函数的地址</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="实时监测进程"><a href="#实时监测进程" class="headerlink" title="实时监测进程"></a>实时监测进程</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">top  
+top -l<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<h2 id="结束进程"><a href="#结束进程" class="headerlink" title="结束进程"></a>结束进程</h2><p>kill命令结束进程<br><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">ps -l  # 通常先用ps命令查看进程ID
+kill PID  # 根据PID结束进程<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div><br>killall命令结束进程<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">killall http*  # 结束所有以http开头的进程，允许通过进程名结束进程<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></p>
+<h1 id="磁盘空间"><a href="#磁盘空间" class="headerlink" title="磁盘空间"></a>磁盘空间</h1><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">df -h  # 查看磁盘使用情况<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<p><img src="https://img-blog.csdnimg.cn/2020030213311057.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0dlbnRsZUNQ,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" style="zoom:50%;" /></p>
+<div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">du  # 显示当前目录下所有的文件、目录和子目录的磁盘使用情况
+du -c # 显示所有已列出文件总的大小
+du -h # 人性化显示<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+<h1 id="处理数据文件"><a href="#处理数据文件" class="headerlink" title="处理数据文件"></a>处理数据文件</h1><h2 id="排序数据"><a href="#排序数据" class="headerlink" title="排序数据"></a>排序数据</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">sort file_name  # 按默认的语言排序规则对文本文件数据排序
+sort -n file_name  # 按数字排序
+sort -M file_name  # 按三字符月份排序，适用于 Jan，Feb这些打头的
+sort -f file_name  # 忽略大小写排序<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="搜索数据"><a href="#搜索数据" class="headerlink" title="搜索数据"></a>搜索数据</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">grep [options] pattern [file] # 在文件中查找包含匹配指定模式的字符的行
+grep t file1  # 在file1中找t开头的行
+grep -v t file1  # 在file1中找不以t开头的行
+grep -n t file1  # 显示行号
+grep -c t file1  # 匹配的数量
+grep [tf] file1  # 在file1中找t或f开头的行，这里也可以用正则表达式<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="压缩数据"><a href="#压缩数据" class="headerlink" title="压缩数据"></a>压缩数据</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">gzip file  # 压缩文件
+gzip file*  # 压缩所有匹配的文件
+gunzip file.gz  # 解压文件 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+<h2 id="归档数据"><a href="#归档数据" class="headerlink" title="归档数据"></a>归档数据</h2><p>相比与gzip，tar命令用的更多<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">tar function [options] object1 object2 ...<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></p>
+<ul>
+<li><strong>tar命令的功能</strong></li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">功能</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">-A</td>
+<td style="text-align:center">将一个已有归档文件追加到另一个已有归档文件</td>
+</tr>
+<tr>
+<td style="text-align:center">-c</td>
+<td style="text-align:center">创建一个新的tar归档文件</td>
+</tr>
+<tr>
+<td style="text-align:center">-d</td>
+<td style="text-align:center">检查归档文件和文件系统的不同之处</td>
+</tr>
+<tr>
+<td style="text-align:center">-r</td>
+<td style="text-align:center">追加文件到已有tar归档文件末尾</td>
+</tr>
+<tr>
+<td style="text-align:center">-t</td>
+<td style="text-align:center">列出已有tar归档文件的内容</td>
+</tr>
+<tr>
+<td style="text-align:center">-u</td>
+<td style="text-align:center">将比tar归档文件中已有的同名文件新的文件追加到该tar归档文件中，简单来说就是更新文件内容</td>
+</tr>
+<tr>
+<td style="text-align:center">-x</td>
+<td style="text-align:center">从已有tar归档文件中提取文件</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>tar命令的选项</strong></li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">选项</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">-C</td>
+<td style="text-align:center">切换到指定目录</td>
+</tr>
+<tr>
+<td style="text-align:center">-f file</td>
+<td style="text-align:center">输出结果到文件或设备file</td>
+</tr>
+<tr>
+<td style="text-align:center">-j</td>
+<td style="text-align:center">将输出重定向给bzip2来压缩内容</td>
+</tr>
+<tr>
+<td style="text-align:center">-p</td>
+<td style="text-align:center">保留所有文件权限</td>
+</tr>
+<tr>
+<td style="text-align:center">-v</td>
+<td style="text-align:center">在处理文件时显示文件</td>
+</tr>
+<tr>
+<td style="text-align:center">-z</td>
+<td style="text-align:center">将输出重定向给gzip命令来压缩内容</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>常用tar命令结构：<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">tar -cvf test.tar test1&#x2F; test2&#x2F;  # 创建名为test.tar的归档文件，含有test1和test2目录内容 
+tar -tf test.tar  # 列出tar文件test.tar的内容（并不提取文件）
+tar -xvf test.tar  # 提取test.tar内容
+tar -zxvf  test.tgz  # 解压以.tgz结尾的压缩文件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></p>
+<h1 id="Linux环境变量"><a href="#Linux环境变量" class="headerlink" title="Linux环境变量"></a>Linux环境变量</h1><p>环境变量的定义：<br>bash shell 用环境变量的特性来存储有关shell会话和工作环境的信息，允许我们在内存中存储数据，以便程序或shell中运行的脚本能够轻松访问到它们。  </p>
+<h2 id="全局环境变量"><a href="#全局环境变量" class="headerlink" title="全局环境变量"></a>全局环境变量</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">printenv  # 查看全局变量<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<p><img src="https://img-blog.csdnimg.cn/20200302133133279.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0dlbnRsZUNQ,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" style="zoom:50%;" /><br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">printenv HOME  # 显示某个环境变量
+echo $HOME  # 显示某个环境变量，需要加$，且加了$可以作为命令行参数<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div><br>设置全局环境变量<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">export variable  # variable是一个局部环境变量，相当于将局部变为全局<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>永久设置全局环境变量：<br>在$HOME/.bashrc 中定义全局环境变量，例如将alias设置放在.bashrc启动文件中 ，或者存储在.profile文件中</p>
+<h2 id="局部环境变量"><a href="#局部环境变量" class="headerlink" title="局部环境变量"></a>局部环境变量</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">set # 显示某个特定进程设置的环境变量<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<p>设置局部环境变量<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">echo $variable
+variable&#x3D;test  # 注意中间不能有空格
+echo $variable<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div><br>删除环境变量<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">unset variable  # 注意这时候不加$<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></p>
+<h2 id="PATH环境变量"><a href="#PATH环境变量" class="headerlink" title="PATH环境变量"></a>PATH环境变量</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">PATH&#x3D;$PATH:new_dir  # 添加new_dir到PATH中，此修改仅持续到退出或重启系统<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<p>登录shell后，shell会从以下5个不同的启动文件中读取命令：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">文件名</th>
+<th style="text-align:left">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">/etc/profile</td>
+<td style="text-align:left">系统上默认shell启动文件，不分用户。<br>ubantu版本中涉及/etc/bash.bashrc,该文件包含了系统环境变量，但CentOS版本中没有<br>文件中主要for循环迭代启动/etc/profile.d目录下的文件</td>
+</tr>
+<tr>
+<td style="text-align:left">$HOME/.bash_profile</td>
+<td style="text-align:left">检查HOME目录是否有.bashrc,若有，则执行.bashrc里的命令，如果存在则忽略剩下的启动文件</td>
+</tr>
+<tr>
+<td style="text-align:left">$HOME/.bashrc</td>
+<td style="text-align:left">存放启动shell时会执行的命令</td>
+</tr>
+<tr>
+<td style="text-align:left">$HOME/.bash_login</td>
+<td style="text-align:left">功能与bash_profile类似，但执行优先级晚</td>
+</tr>
+<tr>
+<td style="text-align:left">$HOME/.profile</td>
+<td style="text-align:left">同上</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="Linux文件权限"><a href="#Linux文件权限" class="headerlink" title="Linux文件权限"></a>Linux文件权限</h1><h2 id="添加新用户"><a href="#添加新用户" class="headerlink" title="添加新用户"></a>添加新用户</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">useradd &lt;user&gt;  # 添加一个新用户 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+<p>添加用户之后该用户还没有密码，需要通过passwd命令给该用户添加密码<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">passwd &lt;user&gt;  # 输入命令后根据提示输入密码<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>通过命令创建的用户存放在/etc/passwd文件中</p>
+<h2 id="删除用户"><a href="#删除用户" class="headerlink" title="删除用户"></a>删除用户</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">userdel &lt;user&gt;  # 只会删除&#x2F;etc&#x2F;passwd文件中的用户信息，不删除系统中属于该用户的任何文件
+userdel -r &lt;user&gt;  # 删除该用户在home中的文件和该用户<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<h2 id="修改用户"><a href="#修改用户" class="headerlink" title="修改用户"></a>修改用户</h2><ul>
+<li><strong>用户账户修改工具</strong></li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">usermod</td>
+<td style="text-align:left">修改用户账户字段，还可以指定主要组以及附加组的所属关系</td>
+</tr>
+<tr>
+<td style="text-align:left">passwd</td>
+<td style="text-align:left">修改已有用户的密码</td>
+</tr>
+<tr>
+<td style="text-align:left">chpasswd</td>
+<td style="text-align:left">从文件中读取登录名密码对，并更新密码</td>
+</tr>
+<tr>
+<td style="text-align:left">chage</td>
+<td style="text-align:left">修改密码的过期日期</td>
+</tr>
+<tr>
+<td style="text-align:left">chfn</td>
+<td style="text-align:left">修改用户账户的备注信息</td>
+</tr>
+<tr>
+<td style="text-align:left">chsh</td>
+<td style="text-align:left">修改用户账户的默认登录shell</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>usermod的参数</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">参数</th>
+<th style="text-align:left">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">-c</td>
+<td style="text-align:left">修改备注字段</td>
+</tr>
+<tr>
+<td style="text-align:left">-e</td>
+<td style="text-align:left">修改过期日期</td>
+</tr>
+<tr>
+<td style="text-align:left">-g</td>
+<td style="text-align:left">修改默认的登录组</td>
+</tr>
+<tr>
+<td style="text-align:left">-l</td>
+<td style="text-align:left">修改用户账户的登录名</td>
+</tr>
+<tr>
+<td style="text-align:left">-L</td>
+<td style="text-align:left">锁定账户，使用户无法登录</td>
+</tr>
+<tr>
+<td style="text-align:left">-p</td>
+<td style="text-align:left">修改账户密码</td>
+</tr>
+<tr>
+<td style="text-align:left">-U</td>
+<td style="text-align:left">接触锁定，使账户能够登录</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Linux组"><a href="#Linux组" class="headerlink" title="Linux组"></a>Linux组</h2><p>就是一堆用户共享同一权限，用户组信息保存在/etc/group文件中<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">groupadd group  # 创建新组<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>更多用户组命令由于涉及不多，不一一列举，以后补上</p>
+<h2 id="文件权限"><a href="#文件权限" class="headerlink" title="文件权限"></a>文件权限</h2><p>理解ls -l列出的文件权限字段含义</p>
+<p><img src="https://img-blog.csdnimg.cn/20200302133206168.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0dlbnRsZUNQ,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" style="zoom:50%;" /></p>
+<p>第一个字段是描述文件和目录权限的编码：<br>-:文件<br>d:目录<br>l:链接<br>c:字符型设备<br>b:块设备<br>n:网络设备<br>接着是3组字符的编码：<br>r:可读<br>w:可写<br>x:可执行<br>三组分别是对象属主，对象数组，其他用户  </p>
+<ul>
+<li><strong>默认权限</strong><br>默认权限由umask命令设置，权限的赋予采用八进制，下表记录了常用的权限对应的八进制值  </li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">权限</th>
+<th style="text-align:center">二进制</th>
+<th style="text-align:center">八进制</th>
+<th style="text-align:center">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">—-</td>
+<td style="text-align:center">000</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">无权限</td>
+</tr>
+<tr>
+<td style="text-align:center">—x</td>
+<td style="text-align:center">001</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">只有执行权限</td>
+</tr>
+<tr>
+<td style="text-align:center">-w-</td>
+<td style="text-align:center">010</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">只有写权限</td>
+</tr>
+<tr>
+<td style="text-align:center">-wx</td>
+<td style="text-align:center">011</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">写+执行</td>
+</tr>
+<tr>
+<td style="text-align:center">r—</td>
+<td style="text-align:center">100</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">只读</td>
+</tr>
+<tr>
+<td style="text-align:center">r-x</td>
+<td style="text-align:center">101</td>
+<td style="text-align:center">5</td>
+<td style="text-align:center">读+执行</td>
+</tr>
+<tr>
+<td style="text-align:center">rw-</td>
+<td style="text-align:center">110</td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">读写</td>
+</tr>
+<tr>
+<td style="text-align:center">rwx</td>
+<td style="text-align:center">111</td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">全部权限</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>umask值是个掩码，会屏蔽不想授予安全级别的权限<br>例如umask = 026 ，则目录的默认权限是 777-026 = 751，文件的默认权限是666-026 = 640<br>umask设置在/etc/prpfile启动文件中  </p>
+<ul>
+<li><strong>改变权限</strong></li>
+</ul>
+<div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">chmod 777 file  # 赋予file的所有权限给所有人
+chmod +x file   # 给所有人添加file的执行权限
+chmod o+x file  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+<p>chmod [ugoa] [+-=] [rxw] file<br>这种形式允许针对用户或组，添加修改权限，u代表用户，g代表组，o代表其他，a代表上述所有  </p>
+<h1 id="安装软件程序"><a href="#安装软件程序" class="headerlink" title="安装软件程序"></a>安装软件程序</h1><h2 id="基于Debian系统"><a href="#基于Debian系统" class="headerlink" title="基于Debian系统"></a>基于Debian系统</h2><p>采用dpkg命令直接和Linux系统上的PMS（package management system 包管理系统）交互，用来安装、管理和删除软件包<br>包含在此PMS的其他工具有：<br>1、apt-get<br>2、apt-cache<br>3、aptitude  </p>
+<ul>
+<li><strong>用apt-get安装软件包</strong>  <div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">apt-get search package_name  # 查找软件包
+apt-get install package_name  # 安装软件包
+
+apt-get safe-upgrade  # 更新软件包
+
+apt-get remove package_name  # 卸载软件,只删除软件包
+apt-get purge package_name  # 删除软件包和相关的数据和配置文件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+ubantu下统一了apt命令，可以将上述全替换成apt</li>
+<li><strong>dpkg安装.deb包</strong>  <div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">dpkg -i jdk-XXX_linux-x64_bin.deb<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+</li>
+</ul>
+<p>配置文件路径：<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">&#x2F;etc&#x2F;apt&#x2F;sources.list<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>以搬瓦工的ubantu系统服务器为例<br><img src="https://img-blog.csdnimg.cn/2020030213325689.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0dlbnRsZUNQ,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" style="zoom:50%;" /></p>
+<h2 id="7-2-基于Red-Hat系统"><a href="#7-2-基于Red-Hat系统" class="headerlink" title="7.2 基于Red Hat系统"></a>7.2 基于Red Hat系统</h2><p>采用rpm命令，常见的前端工具有：<br>1、yum：在Red Hat 和Fedora使用<br>2、urpm： 在Mandriva使用<br>3、zypper：在openSUSE使用<br>由于yum使用较多，以yum为例  </p>
+<ul>
+<li><p><strong>用yum安装软件包</strong></p>
+  <div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">yum list installed  # 列出已安装的包
+yum list installed &gt; installed_software  # 将已安装包的列表重定向到一个文件中  
+yum install package_name  # 安装软件
+yum localinstall package_name.rpm  # 本地安装rpm安装包
+
+yum list updates  # 列出所有已安装包的可用更新
+yum update packet_name  # 跟新指定包
+yum update  # 对更新列表中所有包进行更新
+
+yum remove package_name  # 只删除软件包而保留配置文件和数据文件
+yum erase package_name  #  删除软件和它所有的文件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+<li><p><strong>用rpm安装rpm包</strong>  </p>
+  <div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">rpm -i jdk-XXX_linux-x64_bin.rpm<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></li>
+<li><strong>处理损坏包依赖关系</strong>  <div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">yum clean all  # 清除损坏依赖包
+yum update 
+
+yum deplist package_name  # 显示该包的所有包依赖关系<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+</li>
+</ul>
+<p>配置文件路径<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">&#x2F;etc&#x2F;yum.repos.d&#x2F;CentOS-Base.repo<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>以阿里云centos服务器为例：<br><img src="https://img-blog.csdnimg.cn/20200302133313747.png?#pic_center =500x300" srcset="/img/loading.gif" style="zoom:50%;" /></p>
+<h1 id="编辑器"><a href="#编辑器" class="headerlink" title="编辑器"></a>编辑器</h1><h2 id="vim编辑器"><a href="#vim编辑器" class="headerlink" title="vim编辑器"></a>vim编辑器</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">PageDown(Ctrl+F):下一页
+PageUp(Ctrl+B):上一页
+G：移到最后一行
+num G：移动第num行
+gg：移到第一行<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>全选命令：<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">ggVG  # +y 复制,+d删除，<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></p>
+<ul>
+<li><strong>vim编辑命令</strong></li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">命令</th>
+<th style="text-align:left">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">x</td>
+<td style="text-align:left">删除当前光标所在位置字符，前面加数字删除多个字符（或者进入插入模式用退格或delete键）</td>
+</tr>
+<tr>
+<td style="text-align:left">dd</td>
+<td style="text-align:left">删除当前光标所在行，前面加数字就可以删除多行</td>
+</tr>
+<tr>
+<td style="text-align:left">dw</td>
+<td style="text-align:left">删除当前光标所在位置单词</td>
+</tr>
+<tr>
+<td style="text-align:left">d$</td>
+<td style="text-align:left">删除当前光标所在位置至行尾内容</td>
+</tr>
+<tr>
+<td style="text-align:left">J</td>
+<td style="text-align:left">删除当前光标所在位置行尾的换行符，用于拼接两行</td>
+</tr>
+<tr>
+<td style="text-align:left">u</td>
+<td style="text-align:left">撤销前一编辑命令</td>
+</tr>
+<tr>
+<td style="text-align:left">a</td>
+<td style="text-align:left">在当前光标后追加数据</td>
+</tr>
+<tr>
+<td style="text-align:left">A</td>
+<td style="text-align:left">在当前光标所在行行尾追加数据</td>
+</tr>
+<tr>
+<td style="text-align:left">r char</td>
+<td style="text-align:left">用char替换当前光标所在位置的单个字符</td>
+</tr>
+<tr>
+<td style="text-align:left">R text</td>
+<td style="text-align:left">用text覆盖当前光标所在位置数据，直到按下ESC键</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>复制、粘贴</strong><br>剪切：dd之后+p（因为vim在删除数据时，会将其保存在一个单独的寄存器中）<br>复制：yw复制一个单词，yy复制一行，y$复制到行尾+p粘贴或者进入可视模式（按v）移动光标覆盖你想要复制的文本+p粘贴  </li>
+</ul>
+<p>其他的编辑器诸如nano、emacs、KDE、GNOME因为使用不多，因此暂不做记录  </p>
+<h1 id="Shell脚本编程基础"><a href="#Shell脚本编程基础" class="headerlink" title="Shell脚本编程基础"></a>Shell脚本编程基础</h1><p>所有的shell脚本文件开头第一行需添加<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">#!&#x2F;bin&#x2F;bash<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>这告诉shell用哪个shell来运行脚本</p>
+<h2 id="9-1-echo命令"><a href="#9-1-echo命令" class="headerlink" title="9.1 echo命令"></a>9.1 echo命令</h2><p>echo可以用来在屏幕打印输出，作用相当于print，下面是一个打印HOME目录和局部环境变量的例子：<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">#!&#x2F;bin&#x2F;bash
+num&#x3D;10
+echo &quot;num is $num,home is $HOME&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div><br>注意在编辑完成后给文件赋予用户可执行命令<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">chmod o+x test.sh<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cuZ2VudGxlY3AuY29tL3dwLWNvbnRlbnQvdXBsb2Fkcy81ZTViYzc2OWYzMGZiLnBuZw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt=""></p>
+<h2 id="9-2-命令替换"><a href="#9-2-命令替换" class="headerlink" title="9.2 命令替换"></a>9.2 命令替换</h2><p>有的时候我们需要将环境变量的输出保存给某个变量，供下一个命令输入，有两种方式实现</p>
+<ul>
+<li><strong>反引号</strong><br>这个反引号是键盘左上角波浪线一起的那个键，例如date命令可以获取当前时间信息<div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">date_variable&#x3D;&#96;date&#96;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></li>
+<li><strong>$()</strong><br>shell命令放入括号内<div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">date_variable&#x3D;$(date)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+下面这个例子是利用date命令创建以日期命名的文件<div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">#!&#x2F;bin&#x2F;bash
+today&#x3D;$(date +%Y-%m-%d)
+ls test.sh -al &gt; $today.log<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div>
+</li>
+</ul>
+<p>例子实现了将之前的test.sh shell脚本文件信息输出到一个按今天日期命名的log文件中<br><img src="https://img-blog.csdnimg.cn/20200302133403779.png?#pic_center =400x100" srcset="/img/loading.gif" alt=""></p>
+<h2 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h2><p>输出重定向<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">commond &gt; outputfile  # 输出重定向，将命令的输出发送到一个文件中
+commond &gt;&gt; outputfile  # 追加数据到文件<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div><br>输入重定向<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">wc &lt; test.txt # 通过将文本文件重定向到wc命令，可获得文件的行、词、字节计数
+wc &lt;&lt; EOF # 内联重定向，记录下面输入的内容，直到输入EOF（或者内联的任意结束标志），输出统计的行、词、字节计数<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div><br>可以利用输入输出重定向来实现将一个命令的输出作为另一个命令的输入<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">commond1 &gt; commond.list
+commond2 &lt; commond.list<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></p>
+<h2 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h2><p>可以用管道实现上述两次重定向相同的功能<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">command1 | command2  # 两个命令会同时运行，在第一个命令产生输出结果时立刻送给第二个命令<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>比较常见的是将ls-l的输出输送到more，实现大量数据翻页查看</p>
+<h2 id="数学计算"><a href="#数学计算" class="headerlink" title="数学计算"></a>数学计算</h2><p>在bash中，将一个数学运算结果赋给某个变量时，采用$[opreation]的形式<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">var &#x3D; $[2 * 8]  # 建议采用这种方式，因为这样*不会被理解为正则通配符<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>不过bash仅能支持整数运算，所以不太建议用shell脚本做数学运算，如果非用不可就利用内建bash计算器bc</p>
+<h2 id="命令退出状态码"><a href="#命令退出状态码" class="headerlink" title="命令退出状态码"></a>命令退出状态码</h2><p>每个命令在结束退出的时候都会返回给Linux系统一个状态码，告诉其自己的运行状况。正常退出的状态码为0，其余为正整数，下面是一个例子：</p>
+<p><img src="https://img-blog.csdnimg.cn/20200302133422113.png#pic_center =400x100" srcset="/img/loading.gif" style="zoom:50%;" /></p>
+<p>下面是Linux的退出状态码表  </p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">状态码</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">0</td>
+<td style="text-align:left">成功退出</td>
+</tr>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">一般性未知错误，例如无效参数</td>
+</tr>
+<tr>
+<td style="text-align:left">2</td>
+<td style="text-align:left">不适合的shell命令</td>
+</tr>
+<tr>
+<td style="text-align:left">126</td>
+<td style="text-align:left">命令不可执行，即用户没有权限执行命令</td>
+</tr>
+<tr>
+<td style="text-align:left">127</td>
+<td style="text-align:left">没找到命令</td>
+</tr>
+<tr>
+<td style="text-align:left">128</td>
+<td style="text-align:left">无效的退出参数</td>
+</tr>
+<tr>
+<td style="text-align:left">128+x</td>
+<td style="text-align:left">与Linux信号x相关的严重错误</td>
+</tr>
+<tr>
+<td style="text-align:left">130</td>
+<td style="text-align:left">通过Ctrl+C终止的命令</td>
+</tr>
+<tr>
+<td style="text-align:left">255</td>
+<td style="text-align:left">正常范围之外的退出状态码</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>默认情况下，shell脚本以最后一个命令的退出状态码退出，但我们可以通过exit命令指定一个退出状态码<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">exit 5   # 以一个正整数作为退出状态码
+exit $var   # 以一个变量作为退出状态码，如果变量大于255，则会返回模255<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div></p>
+<h1 id="结构化命令"><a href="#结构化命令" class="headerlink" title="结构化命令"></a>结构化命令</h1><p>前面所讲的shell脚本命令都是按照顺序执行，这难以满足现实开发的需求，这节介绍了一些特殊语句，用于丰富我们的脚本</p>
+<h2 id="if-then语句"><a href="#if-then语句" class="headerlink" title="if-then语句"></a>if-then语句</h2><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">if command   # if 执行command，如果该退出码是0则执行then，否在不执行then后面的命令
+then
+    commands
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>下面是一个例子，包括正确执行then和不执行then<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">#!&#x2F;bin&#x2F;bash
+# execute then
+if pwd
+then
+    echo &quot;pwd has been successfully executed&quot;
+fi
+
+#!&#x2F;bin&#x2F;bash
+# don&#39;t execute then
+if xxxx
+then
+    echo &quot;pwd has been successfully executed&quot;
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div><br>正确执行结果</p>
+<p><img src="https://img-blog.csdnimg.cn/20200302133439748.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0dlbnRsZUNQ,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" style="zoom:50%;" /></p>
+<p>未执行结果</p>
+<p><img src="https://img-blog.csdnimg.cn/20200302133449798.png" srcset="/img/loading.gif" alt=""></p>
+<h2 id="if-then-else语句"><a href="#if-then-else语句" class="headerlink" title="if-then-else语句"></a>if-then-else语句</h2><p>与if-then类似，只是多了else分支，在then不执行时执行else中的命令<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">if command
+then
+    commands
+else
+    commands<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></p>
+<h2 id="嵌套if语句，elif"><a href="#嵌套if语句，elif" class="headerlink" title="嵌套if语句，elif"></a>嵌套if语句，elif</h2><p>上述方法能够判断的条件仅一次，可以通过if嵌套的方式进行多次判断，但是这样代码显得杂乱无章，此时可以通过elif进行第二次判断，下面是一个例子<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">#!&#x2F;bin&#x2F;bash
+# test if-then-elif-then-else
+#
+user&#x3D;gentlecp
+
+if grep $user &#x2F;etc&#x2F;passwd
+then
+    echo &quot;User: $user exists on this system&quot;
+elif ls -d &#x2F;home&#x2F;$user
+then
+    echo &quot;User: $user doesn&#39;t exist on this system&quot;
+    echo &quot;However, $user has a directory at &#x2F;home&quot;
+else
+    echo &quot;User: $user doesn&#39;t exist on this system&quot;
+    echo &quot;Moreover, $user doesn&#39;t have a directory at &#x2F;home&quot;
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div><br>在这个脚本中，elif接过if后命令状态码不为0的情况再次做了判断，下面的elif-then-else 是一个整体，相当于一个独立的if-then-else，不过已经获知了if后语句执行失败的消息<br><strong>运行结果：</strong><br>1、没有User gentlecp</p>
+<p><img src="https://img-blog.csdnimg.cn/20200302133509565.png" srcset="/img/loading.gif" style="zoom:50%;" /><img src="https://img-blog.csdnimg.cn/202003021335229.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0dlbnRsZUNQ,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt=""></p>
+<p>2、创建/home/gentlecp目录运行</p>
+<p><img src="https://img-blog.csdnimg.cn/202003021335229.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0dlbnRsZUNQ,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt=""></p>
+<h2 id="case语句"><a href="#case语句" class="headerlink" title="case语句"></a>case语句</h2><p>有的时候大量的elif非常冗长，且可读性差，这时可用case语句来替换elif，case语句的模式如下<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">case variable in
+pattern1 | pattern2) commands 1;;  # 注意要有两个分号
+pattern3) commands 2;;
+*) default commands;;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></p>
+<h2 id="test命令"><a href="#test命令" class="headerlink" title="test命令"></a>test命令</h2><p>目前if-then语句中均是判断退出状态码，无法测试命令退出状态码以外的条件（事实上也是如此），但可以通过test命令来提供测试不同条件，如果test命令中列出的条件成立，test命令就会退出并返回退出状态码0，否则返回非0状态码<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">if test condition
+then
+    commands
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div><br>下面是一个测试变量中是否存在内容的例子<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">#!&#x2F;bin&#x2F;bash
+# test the test command
+
+variable&#x3D;&quot;ojbk&quot;
+
+if test $variable
+then
+    echo &quot;variable has something&quot;
+else
+    echo &quot;variable has nothing&quot;
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div><br><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cuZ2VudGxlY3AuY29tL3dwLWNvbnRlbnQvdXBsb2Fkcy81ZTViYzgwNmQ1MmQxLnBuZw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt=""></p>
+<p>但是如果你直接用if判断该条件就会如下<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">#!&#x2F;bin&#x2F;bash
+# test the test command
+
+variable&#x3D;&quot;ojbk&quot;
+
+if $variable
+then
+    echo &quot;variable has something&quot;
+else
+    echo &quot;variable has nothing&quot;
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div><br><img src="https://img-blog.csdnimg.cn/20200302133547421.png" srcset="/img/loading.gif" style="zoom:50%;" /></p>
+<p>很明显if 获得$variable命令的退出码非零<br>如果你不想使用test命令也可以通过添加[]的方式，个人比较喜欢加[]的方式更清爽<br><div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">if [ condition ]  # 注意[]里condition与两边的一个空格不能省
+then
+    commands
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div><br>test命令可以判断三类条件：1、数值比较 2、字符串比较 3、文件比较  </p>
+<hr>
+<p>有几点需要特别说明的地方<br>（1）对于字符串大小比较<br>字符串大小比较中，直接用&gt;,&lt;会变成重定向，需要加上转义符\<br>下表记录了三类条件的比较功能</p>
+<table>
+<tr>
+    <td><b>条件</b></td>
+    <td><b>比较</b></td>
+    <td><b>含义</b></td>
+</tr>
+<tr>                                 
+    <td rowspan="6">数值</td>
+    <td>n1 -eq n2</td>
+    <td>n1是否等于n2）</td>
+</tr>
+<tr>                                 
+    <td>n1 -ge n2</td>
+    <td>n1是否大于等于n2</td>
+</tr>
+<tr>                                 
+    <td>n1 -gt n2</td>
+    <td>n1是否大于n2</td>
+</tr>
+<tr>                                 
+    <td>n1 -le n2</td>
+    <td>n1是否小于等于n2</td>
+</tr>
+<tr>                                 
+    <td>n1 -lt n2</td>
+    <td>n1是否小于n2</td>
+</tr>
+<tr>                                 
+    <td>n1 -ne n2</td>
+    <td>n1是否不等于n2</td>
+</tr>
+
+<tr>                                 
+    <td rowspan="6">字符串</td>
+    <td>str1 = str2</td>
+    <td>str1是否同于str2</td>
+</tr>
+<tr>                                 
+    <td>str1 != str2</td>
+    <td>str1是否不同于str2</td>
+</tr>
+<tr>                                 
+    <td>str1 < str2</td>
+    <td>str1是否小于str2(需加\转义符)</td>
+</tr>
+<tr>                                 
+    <td>str1 > str2</td>
+    <td>str1是否大于str2(需加\转义符)</td>
+</tr>
+<tr>                                 
+    <td>-n str1</td>
+    <td>str1长度是否非0</td>
+</tr>
+<tr>                                 
+    <td>-z str1</td>
+    <td>str1长度是否为0</td>
+</tr>
+
+<tr>                                 
+    <td rowspan="11">文件</td>
+    <td>-d file</td>
+    <td>检查file是否存在且为目录</td>
+</tr>
+<tr>                                 
+    <td>-e file</td>
+    <td>检查file是否存在</td>
+</tr>
+<tr>                                 
+    <td>-f file</td>
+    <td>检查file是否存在且是一个文件</td>
+</tr>
+<tr>                                 
+    <td>-r file</td>
+    <td>检查file是否存在且可读</td>
+</tr>
+<tr>                                 
+    <td>-w file</td>
+    <td>检查file是否存在且可写</td>
+</tr>
+<tr>                                 
+    <td>-x file</td>
+    <td>检查file是否存在且可执行</td>
+</tr>
+<tr>                                 
+    <td>-s file</td>
+    <td>检查file是否存在且非空</td>
+</tr>
+<tr>                                 
+    <td>-O file</td>
+    <td>检查file是否存在且属当前用户所有</td>
+</tr>
+<tr>                                 
+    <td>-G file</td>
+    <td>检查file是否存在且默认组与当前用户相同</td>
+</tr>
+<tr>                                 
+    <td>file1 -nt file2</td>
+    <td>检查file1是否比file2新</td>
+</tr>
+<tr>                                 
+    <td>file -ot file2</td>
+    <td>检查file1是否比file2旧</td>
+</tr>
+</table>
+
+<h2 id="if-then高级特性"><a href="#if-then高级特性" class="headerlink" title="if-then高级特性"></a>if-then高级特性</h2><ul>
+<li><p><strong>双括号用于高级数学表达式</strong><br>之前的数学表达式都是简单的判断大小，仅一个数学符号，双括号支持更复杂的数学表达式</p>
+<div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">((expression))  # $val ** 2 &gt;100 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
+</li>
+<li><p><strong>双方括号针对字符串</strong><br>双方括号用于字符串的时候，相当于做模式匹配</p>
+<div class="code-wrapper"><pre class="line-numbers language-text" data-language="text"><code class="language-text">[[expression]]  # $USER &#x3D;&#x3D; test* ,&#x3D;&#x3D;对左边进行右边的pattern进行模式匹配<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/linux/">linux</a>
+                    
+                      <a class="hover-with-bg" href="/tags/command/">command</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/article/1104.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【python】字符串日期格式数据处理</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/article/2786.html">
+                        <span class="hidden-mobile">【软件安全】缓冲区溢出攻击(stack overflow)实践</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'GentleCP/blog.gentlecp.com');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://www.gentlecp.com" target="_blank" rel="nofollow noopener"><span>主站</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/GentleCP/blog.gentlecp.com" target="_blank" rel="nofollow noopener"><span>Repo</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        京ICP证123456号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" alt="police-icon"/>
+            
+            <span>浙ICP备19022407号-1</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
