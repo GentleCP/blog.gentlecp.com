@@ -1,0 +1,729 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210313141425.jpg">
+  <link rel="icon" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210313141425.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  
+    <meta name="description" content="记录我的学习和生活">
+  
+  <meta name="author" content="GentleCP">
+  <meta name="keywords" content="">
+  
+  <title>【静态分析】数据流分析-Part II - 求索</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.gentlecp.com","root":"/","version":"1.8.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":"e327374203a31813ad9ef3899d6f3eb5","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>求索|CP</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://gitee.com/gentlecp/ImgUrl/raw/master/20210302191739.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="【静态分析】数据流分析-Part II">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      GentleCP
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-27 14:01" pubdate>
+        2021年3月27日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      23
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【静态分析】数据流分析-Part II</h1>
+            
+            <div class="markdown-body">
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇<a href="https://blog.gentlecp.com/article/19520.html">【静态分析】数据流分析-Part I - 求索</a>对数据流分析中的<code>Reaching Definition Analysis</code>中进行了详解，用于发现<code>undefined variables</code>，本文继续第二部分内容——<code>Live Variables Analysis</code>。主要内容包括：</p>
+<ul>
+<li><code>Live Variables Analysis</code>的定义和理解</li>
+<li><code>Live Variables Analysis</code>算法设计与详解</li>
+<li>举个栗子</li>
+<li>总结</li>
+</ul>
+<p>读完本文会对数据流分析<code>Live Variables Analysis</code>内容有一个初步的了解，解答包括<strong>是什么，怎么做，效果怎么样</strong>三方面的问题。</p>
+<blockquote>
+<p>本文中涉及的一些专业术语或定义可在上一篇<code>Part I</code>中找到，强烈建议先阅读上一篇文章，本文不再重复赘述</p>
+</blockquote>
+<h2 id="Live-Variables-Analysis"><a href="#Live-Variables-Analysis" class="headerlink" title="Live Variables Analysis"></a>Live Variables Analysis</h2><p>从名字翻译过来是对存储变量的分析，自然而然要引出定义<strong>什么是<code>Live</code>，什么是<code>Dead</code></strong>。</p>
+<div class="note note-info">
+            <p>对于明确给定的的一个<code>program point</code> p，如果存在一条执行路径，在该路径上<code>Variable v</code>被使用过（如<code>a = v</code>），则认为<code>v</code>是<code>live</code>，否则就是<code>dead</code></p>
+          </div>
+<p>换成人话就是如果没被使用过的变量就是<code>dead</code>(没用的变量)，就好比初始化了一个变量<code>v</code>，然而后面的程序就没<code>v</code>什么事了，那这个<code>v</code>等于<code>dead</code></p>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327143037.png" srcset="/img/loading.gif" alt="image-20210327143037134"></p>
+<blockquote>
+<p>注意在该路径上<code>v</code>不应该被重新定义</p>
+</blockquote>
+<p>那<code>Live Variables Analysis</code>有什么作用呢？</p>
+<p>一个常见的场景是当程序需要对某些变量进行计算，同时寄存器已经满了的时候，就可以将<code>dead</code>的变量从寄存器中替换掉。</p>
+<p><code>Live Variables Analysis</code>与<code>Reaching Definition Analysis</code>的分析不同的一点是采用了<code>backward</code>的分析方式，也就是自底向上（倒着分析），这一点需要解释一下：</p>
+<ul>
+<li><p><strong>为什么采用<code>backward</code>的分析方式</strong>：假设<code>forward</code>分析，对于<code>pogram point p</code>要确认v是否<code>live</code>的前提是找到一个v被使用的语句，并且一直要算到<code>exit</code>,这也就意味着，在执行到<code>exit</code>之前，都要保留<code>p</code>这个位置关于<code>v</code>的信息，这意味着对一个变量v需要一个一维数组保留其到<code>exit</code>前所有的状态，对于多个v，那就需要<strong>二维数组</strong>来存储。</p>
+<p>但如果是<code>backward</code>，只要发现v被使用的情况，只需要找前面最近的一条对于v的<code>definition</code>匹配上即可，因此这个过程中可以用<strong>一维的数组</strong>存储所有的变量，当匹配到相应<code>definition</code>就认定该变量对该<code>program point p</code>是<code>live</code>的。</p>
+</li>
+</ul>
+<p>后面依然针对<code>Abstraction</code>,<code>Transfer Function</code>,<code>Control Flow</code>三个部分依次实现。</p>
+<h3 id="Abstraction"><a href="#Abstraction" class="headerlink" title="Abstraction"></a>Abstraction</h3><p>针对<code>Live Variables Analysis</code>，我们的关注点在于变量<code>v</code>的变化，它有两个状态<code>live</code> or <code>dead</code>，因此我们依然可以用<code>bit vector</code>的方式去对程序中出现的多个变量进行定义，假设程序有<code>V1,V2,...,Vn</code>，用1表示<code>live</code>，0表示<code>dead</code>，容易得到一组向量表示<code>00...00</code>(初始化的时候所有v都是<code>dead</code>)</p>
+<h3 id="Transfer-Function"><a href="#Transfer-Function" class="headerlink" title="Transfer Function"></a>Transfer Function</h3><p>前面我们已经确定了<code>backward</code>，也就是说在经过一个<code>BB</code>的时候，需要从<code>OUT[B]</code>结合<code>BB</code>中对v的使用情况，计算得到<code>IN[B]</code>，如此，我们需要考虑几种不同<code>BB</code>的情况（下面的v并非一个具体的变量，而是所有在<code>BB</code>中可能被使用的变量）：</p>
+<ol>
+<li><code>BB</code>中没用对<code>v</code>的使用，也没有对<code>v</code>重新定义（如<code>k=n</code>）：很显然<code>IN[B] = OUT[B]</code></li>
+<li><code>BB</code>中存在对<code>v</code>的使用，但没有对<code>v</code>重新定义（如<code>k=v</code>）: 显然在<code>IN[B]</code>中要加上使用的部分，用$use_B$表示，即$IN[B] = OUT[B] \bigcup use_B$</li>
+<li><code>BB</code>中不存在对<code>v</code>的使用，但有对<code>v</code>的重新定义（如<code>v=3</code>）：这意味着要从<code>OUT[B]</code>中去除被定义的部分，即$IN[B]=OUT[B]-def_B$</li>
+<li><code>BB</code>中同时存在对<code>v</code>的定义和使用，这时候就要分开考虑定义在前还是在后：<ul>
+<li>定义在前（<code>v=2 k=v</code>）：实际上这时候被使用的<code>v</code>已经是新定义的<code>v</code>了，因此和3一样处理</li>
+<li>定义在后（<code>k=v,v=2</code>）：这时候被使用的<code>v</code>依然是原来的<code>v</code>，只不过用完之后被重新定义了（根据<code>Live Variables Analysis</code>的定义，<code>v should not be redefined before usage</code>），这意味着这种情况也是<code>live</code>的，同2处理</li>
+</ul>
+</li>
+</ol>
+<p>综上所述，我们可以得到<code>Transfer Function</code>:</p>
+<script type="math/tex; mode=display">IN[B] = use_B \bigcup (OUT[B] - def_B)</script><blockquote>
+<p>其中$use_B$是指那些use在<code>redefine</code>之前的的使用</p>
+</blockquote>
+<h3 id="Control-Flow"><a href="#Control-Flow" class="headerlink" title="Control Flow"></a>Control Flow</h3><p>下面考虑如何处理数据流汇聚的情况，根据前面的<code>Live Variables Analysis</code>定义，只要存在一条执行路径，该变量被使用过即可，因此与<code>Reaching Definition Analysis</code>相同，<code>Live Variables Analysis</code>的<code>Control Flow</code>也是取$\bigcup$ ，只不过由于是<code>backward</code>，<code>OUTp[B]</code>变成求所有后继节点<code>IN[S]</code>的并集：</p>
+<script type="math/tex; mode=display">OUT[B] = \bigcup_{S\ a\ successor\ of\ B}IN[S]</script><p>上面对<code>Transfer Function</code>和<code>Control Flow</code>的解释多用文字，因此配上一张老师提供的例图来加深理解：</p>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327154929.png" srcset="/img/loading.gif" alt="image-20210327154929253"></p>
+<blockquote>
+<p>其中，假设<code>OUT[B] = &#123;v&#125;</code>（即在<code>OUT[B]</code>中v是<code>live</code>的），根据图中不同数字标注的情况，计算<code>IN[B]</code>中<code>v</code>的<code>live</code>,<code>dead</code>情况</p>
+</blockquote>
+<h2 id="Live-Variables-Analysis-算法设计"><a href="#Live-Variables-Analysis-算法设计" class="headerlink" title="Live Variables Analysis 算法设计"></a>Live Variables Analysis 算法设计</h2><p>有了之前<code>Reaching Definition Analysis</code>的算法设计思路，其实我们对<code>Live Variables Analysis</code>算法的设计应该变得很容易，主要关注变化的点：</p>
+<ol>
+<li>分析方向由<code>forward</code>转向<code>backward</code>，这意味着我们初始化的对象要从<code>entry</code>转向<code>exit</code>，<code>OUT</code>转向<code>IN</code></li>
+<li>关注的变化对象要修改了，之前是关注<code>OUT</code>，因为最终计算结果在<code>OUT[B]</code>中体现，但现在要看<code>IN[B]</code>了</li>
+</ol>
+<p>综上，结合<code>Transfer Function</code>和<code>Control Flow</code>，可以得到算法如下：</p>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327160043.png" srcset="/img/loading.gif" alt="image-20210327160043126"></p>
+<blockquote>
+<p>这里对算法不过多解释，详细可以参考上一篇对<code>Reaching Definition Analysis</code>的算法分析过程</p>
+</blockquote>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>同样地，理解了概念之后，需要经过一个实际的栗子来加深映像，与上文一样，这里受限于文章内容，只给出<strong>起始</strong>和<strong>结束</strong>的状态：</p>
+<ul>
+<li><strong>起始</strong>：假设某CFG如下</li>
+</ul>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327160354.png" srcset="/img/loading.gif" alt="image-20210327160354443" style="zoom:50%;" /></p>
+<blockquote>
+<p>左上角是程序中出现的变量，0表示都还未被使用</p>
+</blockquote>
+<ul>
+<li><strong>结束</strong></li>
+</ul>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327160455.png" srcset="/img/loading.gif" alt="image-20210327160455308"></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>B5</th>
+<th>B4</th>
+<th>B3</th>
+<th>B2</th>
+<th>B1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>def</strong></td>
+<td>z</td>
+<td>x, q</td>
+<td>x</td>
+<td>m, y</td>
+<td>x, y</td>
+</tr>
+<tr>
+<td><strong>use(before  def)</strong></td>
+<td>p</td>
+<td>y</td>
+<td>x</td>
+<td>k</td>
+<td>p, q, z</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>整个的计算思路和上一篇文章类似，只要沿着算法过程不断迭代就可以得到最终结果。对于<code>def</code> 和<code>use(before def)</code>的计算我特地按照<code>B5-&gt;B1</code>的顺序，是为了突出<code>backward</code>的思想。根据上面的表格结合算法，很容易计算得到每个<code>BB</code>的<code>IN[B],OUT[B]</code>。<strong>对于最终结果取如下栗子解释，<code>100 1001</code>表示<code>x,p,k</code>在此<code>program point</code>是<code>live</code>，其他都是<code>dead</code>，你不妨手动根据定义验证一下这个结论是否正确</strong></p>
+</blockquote>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327162508.png" srcset="/img/loading.gif" alt="image-20210327162508258" style="zoom:50%;" /></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文着重讲解了数据流分析中的<code>Live Variables Analysis</code>，包括其<strong>定义与理解，分析过程（算法），实际例子</strong>，实际上这部分内容和<code>Reaching Definition Analysis</code>基本上是异曲同工，只不过将分析的对象从定义转换到了变量，因此，在文中很多对方，我会拿两者进行对比，并进行一些跳跃，如果有看不懂的地方，建议去B站仔细看看老师的授课视频，相信会有更深的体会。</p>
+<p>这堂课带给我比较打的一个思考就是<code>backward</code>和<code>forward</code>的选择，这一点有点像背包问题中的正向循环（01背包）和逆向循环（完全背包）。当某一条路前进计算困难时，不妨逆向思考，倒着走或许会有惊奇的发现（当然思考不是随缘，是基于对定义的深度理解和剖析得到的）</p>
+<p>至此，已完成数据流分析中两部分的分析内容，下一部分是<code>Available Expresiions Analysis</code>，当写完三部分内容后，会对三者进行一个对比总结。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><sup><a href="#fn_1" id="reffn_1">1</a></sup> : <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av97277892/?spm_id_from=333.788.b_765f64657363.3">南京大学《软件分析》课程04（Data Flow Analysis II）_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/security/">security</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/static-analysis/">static_analysis</a>
+                    
+                      <a class="hover-with-bg" href="/tags/live-variable-analysis/">live_variable_analysis</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/article/19520.html">
+                        <span class="hidden-mobile">【静态分析】数据流分析-Part I</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'GentleCP/blog.gentlecp.com');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://www.gentlecp.com" target="_blank" rel="nofollow noopener"><span>主站</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/GentleCP/blog.gentlecp.com" target="_blank" rel="nofollow noopener"><span>Repo</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        京ICP证123456号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" alt="police-icon"/>
+            
+            <span>浙ICP备19022407号-1</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
