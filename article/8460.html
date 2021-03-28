@@ -22,7 +22,7 @@
   <meta name="author" content="GentleCP">
   <meta name="keywords" content="">
   
-  <title>【python】字符串日期格式数据处理 - 求索</title>
+  <title>【IoT智能家居】米家网关接入HomeAssistant - 求索</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -191,7 +191,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="【python】字符串日期格式数据处理">
+            <span class="h2" id="subtitle" title="【IoT智能家居】米家网关接入HomeAssistant">
               
             </span>
 
@@ -206,8 +206,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-03-13 10:58" pubdate>
-        2021年3月13日 上午
+      <time datetime="2020-07-14 11:44" pubdate>
+        2020年7月14日 中午
       </time>
     </span>
   
@@ -218,7 +218,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.1k 字
+      951 字
     </span>
   
 
@@ -228,7 +228,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      13
+      9
        分钟
     </span>
   
@@ -266,65 +266,53 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【python】字符串日期格式数据处理</h1>
+            <h1 style="display: none">【IoT智能家居】米家网关接入HomeAssistant</h1>
             
             <div class="markdown-body">
-              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>特征工程中经常性遇到字符串形式的日期数据，通常我们需要将其转换成计算机能够理解的<code>datetime</code>对象，好处在于可以实现日期早晚的比较(例如要筛选出<code>2019-01-02</code>到<code>2019-03-04</code>内的数据)，日期的加减法等系列操作。<code>python</code>实现该操作的模块是<code>datetime</code>，同时数据分析处理工具<code>pandas</code>也提供了相应的时间格式处理方法<code>to_datetime()</code>，本文从实用性角度出发，简要讲解这两种时间格式处理方式，并以一个具体的例子实际演示如何使用。</p>
+              <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>前段实际需要搭建一个智能家居环境场景使用，为了能够同时接入多个厂商的设备，需要用一个开放的IoT平台，常见的有</p>
+<ul>
+<li><code>IFTTT</code>：允许不同厂商平台的app接入，创建规则实现智能操作，但不支持许多国产的厂商，如小米、华为。</li>
+<li><code>HomeAssistant</code>：用<code>python</code>编写的一个可以本地化部署的开放平台，允许接入的厂商和设备类型非常多，其中就包含<code>小米</code>。</li>
+<li><code>OpenHAB</code>:与<code>HomeAssistant</code>类似，属于国外的开放平台。</li>
+</ul>
+<p>由于本人处于国内，经过斟酌分析，<code>HomeAssistant</code>的可实现性最大，资料也最全。但是在购买米家的设备接入<code>HA</code>的时候却出现了问题。本人在搜集各类资料和实践的过程中也踩了很多坑，浪费了很多时间，因此撰写该文，希望帮助其他人快速解决米家网关接入HA的问题。</p>
 <blockquote>
-<p>注：本文关心的是对于给定的字符串类型时间数据，如何快速进行读取实例化，因此不会大篇幅地去详细介绍模块的各个功能。</p>
+<p>本文主要解决实际操作过程中遇到的问题，更新时间为<code>20/07/14</code>。具体怎么安装<code>HA</code>，网上已有许多教程，这里不多赘述。</p>
 </blockquote>
-<h2 id="datetime"><a href="#datetime" class="headerlink" title="datetime"></a>datetime</h2><p>由于<code>datetime</code>包含了众多对时间数据的处理、初始化操作，一一学习并没有特别大的效益，且很容易忘记，因此，适合在必要的时候查询使用。这里提供一篇对<code>datetime</code>使用讲解十分详细的文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/cmzsteven/article/details/64906245">Python datetime模块详解、示例</a>。</p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p>先提供一个较为官方的<a target="_blank" rel="noopener" href="https://home-assistant.cc/component/xiaomi/zigbee/">中文文档</a>，许多操作可以在这里找到。</p>
+<h2 id="网关局域网通信协议的获取"><a href="#网关局域网通信协议的获取" class="headerlink" title="网关局域网通信协议的获取"></a>网关局域网通信协议的获取</h2><p>当你搜索米家网关接入<code>HomeAssistant</code>时，现在网上有的方案包括官方文档、个人博客，主要包含以下：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.jiaheu.com/topic/258031.html">小米老多功能网关接入HA</a>:这种文章最多，且年代比较久远，一般是17，18年的。限制要求是米家网关必须是老版的多功能网关(非现售的智能多模网关)，上面有很多孔的，且对米家app的要求是老版本<code>5.0.19</code>以前。如果你手上是<a target="_blank" rel="noopener" href="https://item.jd.com/100010622778.html">多模智能网关</a>，就退货吧</li>
+</ul>
+<h2 id="修改configuration-yaml添加设备"><a href="#修改configuration-yaml添加设备" class="headerlink" title="修改configuration.yaml添加设备"></a>修改<code>configuration.yaml</code>添加设备</h2><p>搜索到的资料大多以修改<code>configuration.yaml</code>文件的方式来添加设备，类似下面：<br><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">xiaomi_aqara:
+  gateways:
+    #此处填写Aqara空调伴侣的mac地址，去掉中间的：
+    - mac: 7E49EAB4EC68
+    #此处填写第二步获得的key
+      key: ***************<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div><br>实际上可以通过<code>HA</code>控制面板直接添加。具体步骤包含：</p>
 <blockquote>
-<p>作者从<code>datetime</code>模块下所有的类进行了详细的介绍和使用，并附上了日期格式化符号，可以在需要的时候进行查询。</p>
+<p>前提是你的网关设备已经开启，请在米家app中确保能连接上。</p>
 </blockquote>
-<h3 id="datetime处理字符串时间数据"><a href="#datetime处理字符串时间数据" class="headerlink" title="datetime处理字符串时间数据"></a>datetime处理字符串时间数据</h3><p>主要用到了<code>datetime.datetime.strptime()</code>，能够根据指定的日期格式符号，从字符串中抽取得到<code>datetime</code>实例。例如：<br><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> datetime <span class="token keyword">import</span> datetime
-datetime<span class="token punctuation">.</span>strptime<span class="token punctuation">(</span><span class="token string">'2019-01-03'</span><span class="token punctuation">,</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>  <span class="token comment"># datetime.datetime(2019, 1, 3, 0, 0)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div><br><code>%Y(四位年份),%m(月份),%d(月内中的一天)</code>是日期的格式化符号，更多的符号含义参考上面给的文章，会自动检验日期的合法性，例如2月不可能有30号。<br>转换成<code>datetime</code>实例后，就可以做很多日期的骚操作了，例如：</p>
 <ul>
-<li><strong>比较两个日期的早晚</strong>    <div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> datetime <span class="token keyword">import</span> datetime
-a <span class="token operator">=</span> datetime<span class="token punctuation">.</span>strptime<span class="token punctuation">(</span><span class="token string">'2019-02-20'</span><span class="token punctuation">,</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>
-b <span class="token operator">=</span> datetime<span class="token punctuation">.</span>strptime<span class="token punctuation">(</span><span class="token string">'2029-02-20'</span><span class="token punctuation">,</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>
-a <span class="token operator">&lt;</span> b  <span class="token comment"># True</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div></li>
-<li><strong>计算两个日期相差间隔</strong>    <div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> datetime <span class="token keyword">import</span> datetime
-a <span class="token operator">=</span> datetime<span class="token punctuation">.</span>strptime<span class="token punctuation">(</span><span class="token string">'2019-02-20'</span><span class="token punctuation">,</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>
-b <span class="token operator">=</span> datetime<span class="token punctuation">.</span>strptime<span class="token punctuation">(</span><span class="token string">'2029-02-20'</span><span class="token punctuation">,</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>
-b<span class="token operator">-</span>a  <span class="token comment"># datetime.timedelta(days=3653)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
-这个方法的缺点是一次只能处理单个时间字符串，若要处理大量的时间数据，就需要用for循环，开销上不如<code>pandas.to_datetime</code>，</li>
+<li>按照下图选项添加设备<br>  <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114700.png" srcset="/img/loading.gif" alt="image-20210328114700842" style="zoom:33%;" /></li>
+<li>在搜索栏中搜索xiaomi，选择网关<br>  <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114719.png" srcset="/img/loading.gif" alt="image-20210328114719287" style="zoom: 33%;" /></li>
+<li>按照步骤点击即可，HA会自动发现局域网内的米家网关</li>
+<li>添加完成后，所有联入小米网关的设备都会在<code>HA</code>中显示.<br>  <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114730.png" srcset="/img/loading.gif" alt="image-20210328114730867" style="zoom:33%;" /></li>
 </ul>
-<h2 id="pandas-to-datetime"><a href="#pandas-to-datetime" class="headerlink" title="pandas.to_datetime"></a>pandas.to_datetime</h2><p><code>pandas.to_datetime()</code>接收<code>Series</code>或列表等结构的数据，对其中所有字符串时间数据进行格式化操作，转换成<code>datetime</code>类型。例如：<br><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> pandas <span class="token keyword">as</span> pd
-dates <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'2019-1-29'</span><span class="token punctuation">,</span><span class="token string">'2018/03/27'</span><span class="token punctuation">,</span><span class="token string">'2017-09-3'</span><span class="token punctuation">]</span>
-pd<span class="token punctuation">.</span>to_datetime<span class="token punctuation">(</span>dates<span class="token punctuation">,</span><span class="token builtin">format</span><span class="token operator">=</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>   <span class="token comment"># DatetimeIndex(['2019-01-29', '2018-03-27', '2017-09-03'], dtype='datetime64[ns]', freq=None)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></p>
-<blockquote>
-<p>在上面的例子中我可以对分隔符和0前缀进行了变动，可以发现并不影响最终的结果</p>
-</blockquote>
-<p><code>to_datetime</code>还包含几个重要的参数：</p>
+<h1 id="设备与app选择"><a href="#设备与app选择" class="headerlink" title="设备与app选择"></a>设备与app选择</h1><p>经过本人测试，能够接入<code>HA</code>的小米网关（必须要获取到<strong>局域网通信协议密钥</strong>）有两种：</p>
 <ul>
-<li><code>errors</code><ul>
-<li><code>ignore</code>: 忽略解析错误，按照原始输入进行输出，用于在字符串中出现未知分割符号的时候，如<code>2019#08@13</code></li>
-<li><code>raise(default)</code>: 但发现有无法解析的日期字符串时，报错</li>
-<li><code>coerce</code>: 将无法解析的字符串删除为<code>NaT</code></li>
+<li>老版多功能网关，目前在各大电商均已断货，可以在闲鱼上购买二手设备。<br>  <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114748.png" srcset="/img/loading.gif" alt="image-20210328114747988" style="zoom:33%;" /></li>
+<li>空调伴侣(升级版)带网关:<a target="_blank" rel="noopener" href="https://item.jd.com/100007226867.html">京东链接</a></li>
 </ul>
-</li>
-<li><code>dayfirst</code>: 日优先，在有的地方会把日期放到最前面，形成日/月/年的形式，如<code>10/11/12</code> 解析为<code>2012-11-10</code></li>
-<li><code>yearfirst</code>: 年优先，适用于2位的年份，如<code>10/11/12</code>解析为<code>2010-11-12</code>，但<code>dayfirst</code>,<code>yearfirst</code>同时为<code>True</code>，<code>yearfirst</code>优先级更高</li>
-</ul>
-<p>返回的时候根据传入的数据结构类型不同，返回结果也不同：</p>
-<ul>
-<li>列表（或类似数据结构）: DatetimeIndex</li>
-<li>Series: Series datetime64 类型</li>
-<li>标量: Timestamp</li>
-</ul>
-<h3 id="to-datetime处理时间戳数据"><a href="#to-datetime处理时间戳数据" class="headerlink" title="to_datetime处理时间戳数据"></a>to_datetime处理时间戳数据</h3><p>有的时候给我们的数据以时间戳的方式存储成字符串，例如<code>1490195805</code>，相应的用<code>to_datetime</code>处理如下：</p>
-<ul>
-<li>以秒为单位  <div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python">pd<span class="token punctuation">.</span>to_datetime<span class="token punctuation">(</span><span class="token number">1490195805</span><span class="token punctuation">,</span> unit<span class="token operator">=</span><span class="token string">'s'</span><span class="token punctuation">)</span>  <span class="token comment"># Timestamp('2017-03-22 15:16:45')</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div></li>
-<li>以纳秒为单位  <div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python">pd<span class="token punctuation">.</span>to_datetime<span class="token punctuation">(</span><span class="token number">1490195805433502912</span><span class="token punctuation">,</span> unit<span class="token operator">=</span><span class="token string">'ns'</span><span class="token punctuation">)</span> <span class="token comment">#  Timestamp('2017-03-22 15:16:45.433502912')</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
-</li>
-</ul>
-<h2 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h2><p>假设我们有如下的一组每日降雨记录的数据，每天记录是否降雨：<br><img src="https://img-blog.csdnimg.cn/20200921112722560.png#pic_center" srcset="/img/loading.gif" alt=""><br>现在我们希望知道在<code>2019-02-01</code>到<code>2019-02-02</code>时间内降雨的次数。则可通过如下代码实现：</p>
-<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python">data <span class="token operator">=</span> pd<span class="token punctuation">.</span>DataFrame<span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token string">'isRainFall'</span><span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token string">'date'</span><span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token string">'2019-02-01'</span><span class="token punctuation">,</span><span class="token string">'2019-02-02'</span><span class="token punctuation">,</span><span class="token string">'2019-02-03'</span><span class="token punctuation">]</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-data<span class="token punctuation">[</span><span class="token string">'date'</span><span class="token punctuation">]</span> <span class="token operator">=</span> pd<span class="token punctuation">.</span>to_datetime<span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token string">'date'</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token builtin">format</span><span class="token operator">=</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>  <span class="token comment"># 将字符串时间转换成datetime</span>
-start_date <span class="token operator">=</span> pd<span class="token punctuation">.</span>to_datetime<span class="token punctuation">(</span><span class="token string">'2019-02-01'</span><span class="token punctuation">,</span><span class="token builtin">format</span><span class="token operator">=</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>
-end_date <span class="token operator">=</span> pd<span class="token punctuation">.</span>to_datetime<span class="token punctuation">(</span><span class="token string">'2019-02-02'</span><span class="token punctuation">,</span><span class="token builtin">format</span><span class="token operator">=</span><span class="token string">'%Y-%m-%d'</span><span class="token punctuation">)</span>
-data<span class="token punctuation">[</span><span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token string">'date'</span><span class="token punctuation">]</span> <span class="token operator">>=</span> start_date<span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token string">'date'</span><span class="token punctuation">]</span> <span class="token operator">&lt;=</span> end_date<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'isRainFall'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">sum</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># 1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>而对于米家app，经过我实际测试下来，除非想要按照老版本的获取网关的方式，即便是现在最新版(<code>5.7.5</code>)也可以在上述的网关中获取到<strong>局域网通信协议密钥</strong>。</p>
+<p>我这里以<strong>空调伴侣网关</strong>为例：</p>
+<ol>
+<li>用米家app连接空调伴侣，进入选择网关，点击右上角三个点<br> <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114803.png" srcset="/img/loading.gif" alt="image-20210328114803567" style="zoom: 25%;" /></li>
+<li>选择功能设置，然后狂点下面的插件版本，即可看到局域网通信协议<br> <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114852.png" srcset="/img/loading.gif" alt="image-20210328114852542" style="zoom: 50%;" /></li>
+<li>进入局域网通信协议，选择开启，记住相应密码，点击确定<br> <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114916.png" srcset="/img/loading.gif" alt="image-20210328114916794" style="zoom: 50%;" /></li>
+</ol>
+<p>当获取到局域网通信密钥后，就可以通过<code>HA</code>的添加设备面板按照流程添加米家的网关了，一旦网关添加成功，接入该网关的设备也会显示。</p>
+
             </div>
             <hr>
             <div>
@@ -333,7 +321,7 @@ data<span class="token punctuation">[</span><span class="token punctuation">(</s
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/python/">python</a>
+                      <a class="hover-with-bg" href="/categories/IoT/">IoT</a>
                     
                   </div>
                 
@@ -341,9 +329,9 @@ data<span class="token punctuation">[</span><span class="token punctuation">(</s
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/python/">python</a>
+                      <a class="hover-with-bg" href="/tags/IoT/">IoT</a>
                     
-                      <a class="hover-with-bg" href="/tags/datetime/">datetime</a>
+                      <a class="hover-with-bg" href="/tags/HomeAssistant/">HomeAssistant</a>
                     
                   </div>
                 
@@ -360,21 +348,15 @@ data<span class="token punctuation">[</span><span class="token punctuation">(</s
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/article/47448.html">
+                      <a href="/article/52452.html">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">python如何优雅地在命令行传入参数？sys,argparse,click使用</span>
+                        <span class="hidden-mobile">scrapy 快速上手</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
-                    
-                      <a href="/article/48940.html">
-                        <span class="hidden-mobile">Linux 常用命令大全</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
                     
                   </article>
                 </div>

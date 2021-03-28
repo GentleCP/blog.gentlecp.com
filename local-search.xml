@@ -383,5 +383,32 @@
   
   
   
+  <entry>
+    <title>【IoT智能家居】米家网关接入HomeAssistant</title>
+    <link href="/article/8460.html"/>
+    <url>/article/8460.html</url>
+    
+    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>前段实际需要搭建一个智能家居环境场景使用，为了能够同时接入多个厂商的设备，需要用一个开放的IoT平台，常见的有</p><ul><li><code>IFTTT</code>：允许不同厂商平台的app接入，创建规则实现智能操作，但不支持许多国产的厂商，如小米、华为。</li><li><code>HomeAssistant</code>：用<code>python</code>编写的一个可以本地化部署的开放平台，允许接入的厂商和设备类型非常多，其中就包含<code>小米</code>。</li><li><code>OpenHAB</code>:与<code>HomeAssistant</code>类似，属于国外的开放平台。</li></ul><p>由于本人处于国内，经过斟酌分析，<code>HomeAssistant</code>的可实现性最大，资料也最全。但是在购买米家的设备接入<code>HA</code>的时候却出现了问题。本人在搜集各类资料和实践的过程中也踩了很多坑，浪费了很多时间，因此撰写该文，希望帮助其他人快速解决米家网关接入HA的问题。</p><blockquote><p>本文主要解决实际操作过程中遇到的问题，更新时间为<code>20/07/14</code>。具体怎么安装<code>HA</code>，网上已有许多教程，这里不多赘述。</p></blockquote><h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><p>先提供一个较为官方的<a href="https://home-assistant.cc/component/xiaomi/zigbee/">中文文档</a>，许多操作可以在这里找到。</p><h2 id="网关局域网通信协议的获取"><a href="#网关局域网通信协议的获取" class="headerlink" title="网关局域网通信协议的获取"></a>网关局域网通信协议的获取</h2><p>当你搜索米家网关接入<code>HomeAssistant</code>时，现在网上有的方案包括官方文档、个人博客，主要包含以下：</p><ul><li><a href="https://www.jiaheu.com/topic/258031.html">小米老多功能网关接入HA</a>:这种文章最多，且年代比较久远，一般是17，18年的。限制要求是米家网关必须是老版的多功能网关(非现售的智能多模网关)，上面有很多孔的，且对米家app的要求是老版本<code>5.0.19</code>以前。如果你手上是<a href="https://item.jd.com/100010622778.html">多模智能网关</a>，就退货吧</li></ul><h2 id="修改configuration-yaml添加设备"><a href="#修改configuration-yaml添加设备" class="headerlink" title="修改configuration.yaml添加设备"></a>修改<code>configuration.yaml</code>添加设备</h2><p>搜索到的资料大多以修改<code>configuration.yaml</code>文件的方式来添加设备，类似下面：<br><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">xiaomi_aqara:  gateways:    #此处填写Aqara空调伴侣的mac地址，去掉中间的：    - mac: 7E49EAB4EC68    #此处填写第二步获得的key      key: ***************<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div><br>实际上可以通过<code>HA</code>控制面板直接添加。具体步骤包含：</p><blockquote><p>前提是你的网关设备已经开启，请在米家app中确保能连接上。</p></blockquote><ul><li>按照下图选项添加设备<br>  <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114700.png" alt="image-20210328114700842" style="zoom:33%;" /></li><li>在搜索栏中搜索xiaomi，选择网关<br>  <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114719.png" alt="image-20210328114719287" style="zoom: 33%;" /></li><li>按照步骤点击即可，HA会自动发现局域网内的米家网关</li><li>添加完成后，所有联入小米网关的设备都会在<code>HA</code>中显示.<br>  <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114730.png" alt="image-20210328114730867" style="zoom:33%;" /></li></ul><h1 id="设备与app选择"><a href="#设备与app选择" class="headerlink" title="设备与app选择"></a>设备与app选择</h1><p>经过本人测试，能够接入<code>HA</code>的小米网关（必须要获取到<strong>局域网通信协议密钥</strong>）有两种：</p><ul><li>老版多功能网关，目前在各大电商均已断货，可以在闲鱼上购买二手设备。<br>  <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114748.png" alt="image-20210328114747988" style="zoom:33%;" /></li><li>空调伴侣(升级版)带网关:<a href="https://item.jd.com/100007226867.html">京东链接</a></li></ul><p>而对于米家app，经过我实际测试下来，除非想要按照老版本的获取网关的方式，即便是现在最新版(<code>5.7.5</code>)也可以在上述的网关中获取到<strong>局域网通信协议密钥</strong>。</p><p>我这里以<strong>空调伴侣网关</strong>为例：</p><ol><li>用米家app连接空调伴侣，进入选择网关，点击右上角三个点<br> <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114803.png" alt="image-20210328114803567" style="zoom: 25%;" /></li><li>选择功能设置，然后狂点下面的插件版本，即可看到局域网通信协议<br> <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114852.png" alt="image-20210328114852542" style="zoom: 50%;" /></li><li>进入局域网通信协议，选择开启，记住相应密码，点击确定<br> <img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210328114916.png" alt="image-20210328114916794" style="zoom: 50%;" /></li></ol><p>当获取到局域网通信密钥后，就可以通过<code>HA</code>的添加设备面板按照流程添加米家的网关了，一旦网关添加成功，接入该网关的设备也会显示。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>IoT</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>IoT</tag>
+      
+      <tag>HomeAssistant</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
   
 </search>
