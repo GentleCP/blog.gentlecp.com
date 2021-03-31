@@ -22,7 +22,7 @@
   <meta name="author" content="GentleCP">
   <meta name="keywords" content="">
   
-  <title>【静态分析】数据流分析-Part II - 求索</title>
+  <title>【静态分析】数据流分析-Part III - 求索</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -191,7 +191,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="【静态分析】数据流分析-Part II">
+            <span class="h2" id="subtitle" title="【静态分析】数据流分析-Part III">
               
             </span>
 
@@ -206,8 +206,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-03-27 14:01" pubdate>
-        2021年3月27日 下午
+      <time datetime="2021-03-31 10:28" pubdate>
+        2021年3月31日 上午
       </time>
     </span>
   
@@ -218,7 +218,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2k 字
+      1.5k 字
     </span>
   
 
@@ -228,7 +228,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      23
+      17
        分钟
     </span>
   
@@ -266,121 +266,127 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【静态分析】数据流分析-Part II</h1>
+            <h1 style="display: none">【静态分析】数据流分析-Part III</h1>
             
             <div class="markdown-body">
-              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇<a href="https://blog.gentlecp.com/article/19520.html">【静态分析】数据流分析-Part I - 求索</a>对数据流分析中的<code>Reaching Definition Analysis</code>中进行了详解，用于发现<code>undefined variables</code>，本文继续第二部分内容——<code>Live Variables Analysis</code>。主要内容包括：</p>
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇<a href="https://blog.gentlecp.com/article/1676.html">【静态分析】数据流分析-Part II - 求索</a> 对数据流分析中的<code>Live Variables Analysis</code>进行了详解，用于查找<code>used/unused variables</code>，本文继续第三部分内容（也是数据流分析的最后一部分内容）——<code>Available Expression Analysis</code>。主要内容包括：</p>
 <ul>
-<li><code>Live Variables Analysis</code>的定义和理解</li>
-<li><code>Live Variables Analysis</code>算法设计与详解</li>
+<li><code>Available Expression Analysis</code>的定义和理解</li>
+<li><code>Available Expression Analysis</code>算法设计与详解</li>
 <li>举个栗子</li>
+<li>数据流分析中的三种分析方式对比</li>
 <li>总结</li>
 </ul>
-<p>读完本文会对数据流分析<code>Live Variables Analysis</code>内容有一个初步的了解，解答包括<strong>是什么，怎么做，效果怎么样</strong>三方面的问题。</p>
+<p>读完本文回对数据流分析<code>Available Expression Analysis</code></p>
+<p>内容有一个初步的了解，解答<strong>是什么，怎么做，效果怎么样</strong>三方面的问题，同时作为最后一篇数据流分析的文章，会将前面两个部分与本文内容做一个整体的总结，以表格形式对比三者，加深对数据流分析三种分析方式的理解。</p>
 <blockquote>
-<p>本文中涉及的一些专业术语或定义可在上一篇<code>Part I</code>中找到，强烈建议先阅读上一篇文章，本文不再重复赘述</p>
+<p>本文中涉及的一些专业术语或定义可在<a href="https://blog.gentlecp.com/article/19520.html">Part I</a>中找到，强烈建议按顺序阅读前两篇文章，本文不再重复赘述</p>
 </blockquote>
-<h2 id="Live-Variables-Analysis"><a href="#Live-Variables-Analysis" class="headerlink" title="Live Variables Analysis"></a>Live Variables Analysis</h2><p>从名字翻译过来是对存储变量的分析，自然而然要引出定义<strong>什么是<code>Live</code>，什么是<code>Dead</code></strong>。</p>
+<h2 id="Available-Expression-Analysis"><a href="#Available-Expression-Analysis" class="headerlink" title="Available Expression Analysis"></a>Available Expression Analysis</h2><p>即可用表达式分析，首先明确分析对象是表达式，类似<code>x op y</code>这种，下面看一下定义：</p>
 <div class="note note-info">
-            <p>对于明确给定的的一个<code>program point</code> p，如果存在一条执行路径，在该路径上<code>Variable v</code>被使用过（如<code>a = v</code>），则认为<code>v</code>是<code>live</code>，否则就是<code>dead</code></p>
+            <p>对于给定的一个<code>program point</code> p，表达式可用的前提是：</p><ol><li>所有从<code>entry</code>到p的路径都必须经过对该表达式<code>x op y</code>的执行（也即该路径上必须至少出现一次该表达式）</li><li>在表达式<code>x op y</code> 最后一次执行之后，没有对x，y的重定义</li></ol>
           </div>
-<p>换成人话就是如果没被使用过的变量就是<code>dead</code>(没用的变量)，就好比初始化了一个变量<code>v</code>，然而后面的程序就没<code>v</code>什么事了，那这个<code>v</code>等于<code>dead</code></p>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327143037.png" srcset="/img/loading.gif" alt="image-20210327143037134"></p>
-<blockquote>
-<p>注意在该路径上<code>v</code>不应该被重新定义</p>
-</blockquote>
-<p>那<code>Live Variables Analysis</code>有什么作用呢？</p>
-<p>一个常见的场景是当程序需要对某些变量进行计算，同时寄存器已经满了的时候，就可以将<code>dead</code>的变量从寄存器中替换掉。</p>
-<p><code>Live Variables Analysis</code>与<code>Reaching Definition Analysis</code>的分析不同的一点是采用了<code>backward</code>的分析方式，也就是自底向上（倒着分析），这一点需要解释一下：</p>
-<ul>
-<li><p><strong>为什么采用<code>backward</code>的分析方式</strong>：假设<code>forward</code>分析，对于<code>pogram point p</code>要确认v是否<code>live</code>的前提是找到一个v被使用的语句，并且一直要算到<code>exit</code>,这也就意味着，在执行到<code>exit</code>之前，都要保留<code>p</code>这个位置关于<code>v</code>的信息，这意味着对一个变量v需要一个一维数组保留其到<code>exit</code>前所有的状态，对于多个v，那就需要<strong>二维数组</strong>来存储。</p>
-<p>但如果是<code>backward</code>，只要发现v被使用的情况，只需要找前面最近的一条对于v的<code>definition</code>匹配上即可，因此这个过程中可以用<strong>一维的数组</strong>存储所有的变量，当匹配到相应<code>definition</code>就认定该变量对该<code>program point p</code>是<code>live</code>的。</p>
-</li>
-</ul>
-<p>后面依然针对<code>Abstraction</code>,<code>Transfer Function</code>,<code>Control Flow</code>三个部分依次实现。</p>
-<h3 id="Abstraction"><a href="#Abstraction" class="headerlink" title="Abstraction"></a>Abstraction</h3><p>针对<code>Live Variables Analysis</code>，我们的关注点在于变量<code>v</code>的变化，它有两个状态<code>live</code> or <code>dead</code>，因此我们依然可以用<code>bit vector</code>的方式去对程序中出现的多个变量进行定义，假设程序有<code>V1,V2,...,Vn</code>，用1表示<code>live</code>，0表示<code>dead</code>，容易得到一组向量表示<code>00...00</code>(初始化的时候所有v都是<code>dead</code>)</p>
-<h3 id="Transfer-Function"><a href="#Transfer-Function" class="headerlink" title="Transfer Function"></a>Transfer Function</h3><p>前面我们已经确定了<code>backward</code>，也就是说在经过一个<code>BB</code>的时候，需要从<code>OUT[B]</code>结合<code>BB</code>中对v的使用情况，计算得到<code>IN[B]</code>，如此，我们需要考虑几种不同<code>BB</code>的情况（下面的v并非一个具体的变量，而是所有在<code>BB</code>中可能被使用的变量）：</p>
+<p>用人话解释一下就是，在程序的某一阶段<code>program point p</code>，我们打算直接用某个变量去替代一个表达式了（避免多次计算），这就需要保证该表达式中涉及的变量没有发生变化（前提2），同时所有路径的表达式都要出现过且应该要一致（前提1），这样就能保证该变量与表达式计算的值是一致的。</p>
+<p>看一下下面的例子：</p>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210331111054.png" srcset="/img/loading.gif" alt="image-20210331111054673" style="zoom:50%;" /></p>
+<p>程序块输入<code>IN=&#123;a+b&#125;</code>，经过执行<code>a=x op y</code>后，添加新的表达式<code>x op y</code>到输出中，同时因为a被重定义了，所以表达式<code>a+b</code>从集合中去除，最终结果输出<code>OUT=&#123;x op y&#125;</code></p>
+<p>同样，针对<code>Available Expression Analysis</code>，也要明确<code>Abstraction</code>,<code>Transfer Function</code>,<code>Control Flow</code>。</p>
+<h3 id="Abstraction"><a href="#Abstraction" class="headerlink" title="Abstraction"></a>Abstraction</h3><p>对象是表达式，没得说了，假设有表达式<code>E1,E2,...En</code>，则定义1表示<code>available</code>，0表示<code>unavailable</code>，易得<code>bit vector</code>表示：<code>000..000</code></p>
+<h3 id="Transfer-Function"><a href="#Transfer-Function" class="headerlink" title="Transfer Function"></a>Transfer Function</h3><p>在前面的例子中已经体现出了<code>transfer function</code>的核心要点：</p>
 <ol>
-<li><code>BB</code>中没用对<code>v</code>的使用，也没有对<code>v</code>重新定义（如<code>k=n</code>）：很显然<code>IN[B] = OUT[B]</code></li>
-<li><code>BB</code>中存在对<code>v</code>的使用，但没有对<code>v</code>重新定义（如<code>k=v</code>）: 显然在<code>IN[B]</code>中要加上使用的部分，用$use_B$表示，即$IN[B] = OUT[B] \bigcup use_B$</li>
-<li><code>BB</code>中不存在对<code>v</code>的使用，但有对<code>v</code>的重新定义（如<code>v=3</code>）：这意味着要从<code>OUT[B]</code>中去除被定义的部分，即$IN[B]=OUT[B]-def_B$</li>
-<li><code>BB</code>中同时存在对<code>v</code>的定义和使用，这时候就要分开考虑定义在前还是在后：<ul>
-<li>定义在前（<code>v=2 k=v</code>）：实际上这时候被使用的<code>v</code>已经是新定义的<code>v</code>了，因此和3一样处理</li>
-<li>定义在后（<code>k=v,v=2</code>）：这时候被使用的<code>v</code>依然是原来的<code>v</code>，只不过用完之后被重新定义了（根据<code>Live Variables Analysis</code>的定义，<code>v should not be redefined before usage</code>），这意味着这种情况也是<code>live</code>的，同2处理</li>
-</ul>
-</li>
+<li>将新的表达式$gen_B$加入输出中</li>
+<li>从输出中去除含重定义变量的表达式$def_B$</li>
 </ol>
-<p>综上所述，我们可以得到<code>Transfer Function</code>:</p>
-<script type="math/tex; mode=display">IN[B] = use_B \bigcup (OUT[B] - def_B)</script><blockquote>
-<p>其中$use_B$是指那些use在<code>redefine</code>之前的的使用</p>
-</blockquote>
-<h3 id="Control-Flow"><a href="#Control-Flow" class="headerlink" title="Control Flow"></a>Control Flow</h3><p>下面考虑如何处理数据流汇聚的情况，根据前面的<code>Live Variables Analysis</code>定义，只要存在一条执行路径，该变量被使用过即可，因此与<code>Reaching Definition Analysis</code>相同，<code>Live Variables Analysis</code>的<code>Control Flow</code>也是取$\bigcup$ ，只不过由于是<code>backward</code>，<code>OUTp[B]</code>变成求所有后继节点<code>IN[S]</code>的并集：</p>
-<script type="math/tex; mode=display">OUT[B] = \bigcup_{S\ a\ successor\ of\ B}IN[S]</script><p>上面对<code>Transfer Function</code>和<code>Control Flow</code>的解释多用文字，因此配上一张老师提供的例图来加深理解：</p>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327154929.png" srcset="/img/loading.gif" alt="image-20210327154929253"></p>
-<blockquote>
-<p>其中，假设<code>OUT[B] = &#123;v&#125;</code>（即在<code>OUT[B]</code>中v是<code>live</code>的），根据图中不同数字标注的情况，计算<code>IN[B]</code>中<code>v</code>的<code>live</code>,<code>dead</code>情况</p>
-</blockquote>
-<h2 id="Live-Variables-Analysis-算法设计"><a href="#Live-Variables-Analysis-算法设计" class="headerlink" title="Live Variables Analysis 算法设计"></a>Live Variables Analysis 算法设计</h2><p>有了之前<code>Reaching Definition Analysis</code>的算法设计思路，其实我们对<code>Live Variables Analysis</code>算法的设计应该变得很容易，主要关注变化的点：</p>
+<p>因此，显然有：</p>
+<script type="math/tex; mode=display">OUT[B] = gen_B \bigcup (IN[B]-def_B)</script><p>关于先<code>gen</code>还是<code>kill</code>，就看语句的执行书顺序，例如：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># e.g. 1</span>
+x <span class="token operator">=</span> x <span class="token operator">+</span> y  <span class="token comment"># 先gen x+y，又因为x被redefined，kill x+y</span>
+
+<span class="token comment"># e.g. 2</span>
+a <span class="token operator">=</span> x <span class="token operator">+</span> y  <span class="token comment"># kill a的表达式</span>
+c <span class="token operator">=</span> a <span class="token operator">+</span> b  <span class="token comment"># 新生成a+b</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<h3 id="Control-Flow"><a href="#Control-Flow" class="headerlink" title="Control Flow"></a>Control Flow</h3><p>这一块和之前两种分析方式都不一样了，因为根据定义，所有的path都应该要有该表达式的执行（假设存在一条路径没有，那么一旦执行到这条路径，某变量和表达式的值就不一定相等了），因此从多输出聚合到输入的过程中，应该采用交集：</p>
+<script type="math/tex; mode=display">IN[B] = \bigcap_{P\ a\ predecessor\ of\ B}OUT[P]</script><h2 id="Available-Expression-Analysis-算法设计"><a href="#Available-Expression-Analysis-算法设计" class="headerlink" title="Available Expression Analysis 算法设计"></a>Available Expression Analysis 算法设计</h2><p>有过前面两次的设计经验，这部分应该驾轻就熟了，输入输出都是差不多的，需要特别明确的一点是初始化的部分：</p>
 <ol>
-<li>分析方向由<code>forward</code>转向<code>backward</code>，这意味着我们初始化的对象要从<code>entry</code>转向<code>exit</code>，<code>OUT</code>转向<code>IN</code></li>
-<li>关注的变化对象要修改了，之前是关注<code>OUT</code>，因为最终计算结果在<code>OUT[B]</code>中体现，但现在要看<code>IN[B]</code>了</li>
+<li>一开始所有的<code>expression</code>都应该是<code>unavilable</code>，所以对$OUT[entry]=\phi$</li>
+<li>对所有<code>OUT[B]</code>就不一样了，因为前面说到我们要对所有前驱输出做交集得到下一<code>BB</code>的输入，如果初始化的时候前驱<code>BB</code>都是0，那意味着结果一定都为0，这样就没有起到对<code>IN[BB]</code>的更新效果，因此，除<code>entry</code>外的<code>BB</code>初始化$OUT[B] = \cup(1)$</li>
 </ol>
-<p>综上，结合<code>Transfer Function</code>和<code>Control Flow</code>，可以得到算法如下：</p>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327160043.png" srcset="/img/loading.gif" alt="image-20210327160043126"></p>
-<blockquote>
-<p>这里对算法不过多解释，详细可以参考上一篇对<code>Reaching Definition Analysis</code>的算法分析过程</p>
-</blockquote>
-<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>同样地，理解了概念之后，需要经过一个实际的栗子来加深映像，与上文一样，这里受限于文章内容，只给出<strong>起始</strong>和<strong>结束</strong>的状态：</p>
+<p>其他的实际上和<code>Reaching definition analysis</code>没什么差别，循环迭代直到<code>OUT</code>不再产生变化，具体算法描述如下：</p>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210331184554.png" srcset="/img/loading.gif" alt="image-20210331184554736"></p>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>下面通过一个具体的样例来加深对算法过程的理解，与之前一样，受限于文章内容，只给出<strong>初始</strong>和<strong>结束</strong>状态：</p>
 <ul>
-<li><strong>起始</strong>：假设某CFG如下</li>
+<li><strong>起始</strong>：假设某CFG如下：</li>
 </ul>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327160354.png" srcset="/img/loading.gif" alt="image-20210327160354443" style="zoom:50%;" /></p>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210331185623.png" srcset="/img/loading.gif" alt="image-20210331185623145"></p>
 <blockquote>
-<p>左上角是程序中出现的变量，0表示都还未被使用</p>
+<p>左上角是程序中出现的表达式</p>
 </blockquote>
 <ul>
 <li><strong>结束</strong></li>
 </ul>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327160455.png" srcset="/img/loading.gif" alt="image-20210327160455308"></p>
+<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210331185715.png" srcset="/img/loading.gif" alt="image-20210331185715022"></p>
+<blockquote>
+<p>整个过程实际上基本上和<code>Reaching Definition Analysis</code>十分相近，只不过在初始化和<code>Transfer Function</code>,<code>Control Flow</code>的表达式上不同</p>
+</blockquote>
+<h2 id="三种分析方式对比"><a href="#三种分析方式对比" class="headerlink" title="三种分析方式对比"></a>三种分析方式对比</h2><p>下图展示了<code>Reaching Definition Analysis, Live Variables Analysis, Available Expression Analysis</code>三种分析方式的对比：</p>
 <div class="table-container">
 <table>
 <thead>
 <tr>
 <th></th>
-<th>B5</th>
-<th>B4</th>
-<th>B3</th>
-<th>B2</th>
-<th>B1</th>
+<th>Reaching Definitions</th>
+<th>Live Variables</th>
+<th>Available Expressions</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>def</strong></td>
-<td>z</td>
-<td>x, q</td>
-<td>x</td>
-<td>m, y</td>
-<td>x, y</td>
+<td><strong>Domain</strong>(分析对象)</td>
+<td>definitions</td>
+<td>variables</td>
+<td>expressions</td>
 </tr>
 <tr>
-<td><strong>use(before  def)</strong></td>
-<td>p</td>
-<td>y</td>
-<td>x</td>
-<td>k</td>
-<td>p, q, z</td>
+<td><strong>Direction</strong>(分析方向)</td>
+<td>forward</td>
+<td>backward</td>
+<td>forward</td>
+</tr>
+<tr>
+<td><strong>May/Must</strong>(存在/全部)</td>
+<td>may</td>
+<td>may</td>
+<td>must</td>
+</tr>
+<tr>
+<td><strong>Boundary</strong>(边界)</td>
+<td>$OUT[entry]=\phi$</td>
+<td>$IN[exit]=\phi$</td>
+<td>$OUT[entry]=\phi$</td>
+</tr>
+<tr>
+<td><strong>Initialization</strong>(初始化)</td>
+<td>$OUT[B]=\phi$</td>
+<td>$IN[B]=\phi$</td>
+<td>$OUT[B]=\cup$</td>
+</tr>
+<tr>
+<td><strong>Transfer Function</strong></td>
+<td>$OUT[B]=gen_B\bigcup(IN[B]-kill_B)$</td>
+<td>$IN[B]=use_B\bigcup(IN[B]-def_B)$</td>
+<td>$OUT[B]=gen_B\bigcup(IN[B]-def_B)$</td>
+</tr>
+<tr>
+<td><strong>Meet</strong>($\cup/\cap$)</td>
+<td>$\cup$</td>
+<td>$\cup$</td>
+<td>$\cap$</td>
 </tr>
 </tbody>
 </table>
 </div>
-<blockquote>
-<p>整个的计算思路和上一篇文章类似，只要沿着算法过程不断迭代就可以得到最终结果。对于<code>def</code> 和<code>use(before def)</code>的计算我特地按照<code>B5-&gt;B1</code>的顺序，是为了突出<code>backward</code>的思想。根据上面的表格结合算法，很容易计算得到每个<code>BB</code>的<code>IN[B],OUT[B]</code>。<strong>对于最终结果取如下栗子解释，<code>100 1001</code>表示<code>x,p,k</code>在此<code>program point</code>是<code>live</code>，其他都是<code>dead</code>，你不妨手动根据定义验证一下这个结论是否正确</strong></p>
-</blockquote>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210327162508.png" srcset="/img/loading.gif" alt="image-20210327162508258" style="zoom:50%;" /></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文着重讲解了数据流分析中的<code>Live Variables Analysis</code>，包括其<strong>定义与理解，分析过程（算法），实际例子</strong>，实际上这部分内容和<code>Reaching Definition Analysis</code>基本上是异曲同工，只不过将分析的对象从定义转换到了变量，因此，在文中很多对方，我会拿两者进行对比，并进行一些跳跃，如果有看不懂的地方，建议去B站仔细看看老师的授课视频，相信会有更深的体会。</p>
-<p>这堂课带给我比较打的一个思考就是<code>backward</code>和<code>forward</code>的选择，这一点有点像背包问题中的正向循环（01背包）和逆向循环（完全背包）。当某一条路前进计算困难时，不妨逆向思考，倒着走或许会有惊奇的发现（当然思考不是随缘，是基于对定义的深度理解和剖析得到的）</p>
-<p>至此，已完成数据流分析中两部分的分析内容，下一部分是<code>Available Expresiions Analysis</code>，当写完三部分内容后，会对三者进行一个对比总结。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文着重讲解了数据流分析中的<code>Available Expression Analysis</code>，包括其<strong>定义与理解，分析过程（算法），实际例子</strong>，该分析使得在编译优化的过程中可以避免对大量表达式进行重复计算，大大提升程序效率，文末还对现有的三种分析方式进行了对比。</p>
+<p>至此，数据流分析的三种分析已经全部结束，当然这些尚处于理论层次的理解，还需要通过实际的动手分析锻炼后才能将这些内容融会贯通，后续会添加我的手动实践笔记到博客中。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><sup><a href="#fn_1" id="reffn_1">1</a></sup> : <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av97277892/?spm_id_from=333.788.b_765f64657363.3">南京大学《软件分析》课程04（Data Flow Analysis II）_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili</a></p>
 
             </div>
@@ -401,7 +407,7 @@
                     
                       <a class="hover-with-bg" href="/tags/static-analysis/">static_analysis</a>
                     
-                      <a class="hover-with-bg" href="/tags/live-variable-analysis/">live_variable_analysis</a>
+                      <a class="hover-with-bg" href="/tags/available-expression-analysis/">available_expression_analysis</a>
                     
                   </div>
                 
@@ -418,9 +424,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/article/21446.html">
+                      <a href="/article/23726.html">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【静态分析】数据流分析-Part III</span>
+                        <span class="hidden-mobile">数据类创建与使用</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -428,8 +434,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/article/19520.html">
-                        <span class="hidden-mobile">【静态分析】数据流分析-Part I</span>
+                      <a href="/article/1676.html">
+                        <span class="hidden-mobile">【静态分析】数据流分析-Part II</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
