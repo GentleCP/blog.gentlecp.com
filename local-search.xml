@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>【corpwechat-bot】一个好用的企业微信消息推送python接口库</title>
+    <link href="/article/22468.html"/>
+    <url>/article/22468.html</url>
+    
+    <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>corpwechat-bot</code>是一个<code>python</code>封装的企业机器人&amp;应用消息推送库，通过企业微信提供的api实现。</p><p>利用本库，你可以轻松地实现从服务器端发送一条文本、图片、视频、<code>markdown</code>等等消息到你的微信手机端，而不依赖于其他的第三方应用，如<code>ServerChan</code>。</p><h2 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h2><blockquote><p><strong>注意</strong>，本项目依赖于企业微信创建群聊机器人或应用，要想实现需要先注册一个属于你自己的企业微信号，这十分简便，参照<a href="https://work.weixin.qq.com/">官方网址</a>即可</p></blockquote><p>当你有了企业微信后，你还需要做一些配置，根据你自身的需求来做选择：</p><ul><li><strong>应用消息推送</strong> ：应用消息推送需要在企业微信中创建一个第三方应用，<a href="https://open.work.weixin.qq.com/wwopen/helpguide/detail?t=selfBuildApp">参照教程</a></li><li><strong>群聊机器人消息推送</strong>：群聊机器人消息推送需要在你已有的企业群中添加一个机器人，然后获取相应的机器人<code>key</code>，<a href="https://jingyan.baidu.com/article/d45ad148cc79eb28552b80b5.html">参照教程</a></li></ul><h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>下面是部分项目演示效果：</p><ul><li><strong>应用消息推送</strong><br><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210409154040.png" alt="image-20210409154040566"></li><li><strong>群聊机器人消息推送</strong><br><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210409154014.png" alt="img_2.png"></li></ul><h2 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h2><p>目前实现了两种推送消息方式，<strong>应用消息推送</strong>和<strong>群聊机器人消息推送</strong>，具体效果参考<a href="docs/usage.md">使用教程</a></p><ul><li><p><strong>应用消息推送</strong>：该推送会直接传至你的个人微信上，你会像收到好友消息一样收到通知信息，<strong>不需要安装企业微信</strong>，具体包括：</p><ul><li>[x] 文本消息: 最普通的消息，文字内容，最长不超过2048个字节</li><li>[x] 图片消息：发送一张图片，可选<code>jpg,png</code>，大小不超过2MB，目前仅支持通过图片路径发送.</li><li>[x] 语音消息：发送一条语音，大小不超过2MB，时长不超过60s，必须是<code>.amr</code>格式</li><li>[x] 视频消息：发送一段视频，大小不超过10MB，必须是<code>.mp4</code>格式</li><li>[x] 普通文件：其他类型的文件，大小不超过20MB（不小于5字节）</li><li>[x] markdown消息：传输markdown类型消息</li><li>[x] 图文消息：图片文字形式，带有跳转链接，适合做推广</li><li>[x] 文本卡片消息：以卡片形式呈现的文本，包含跳转链接</li><li>[ ] 小程序通知消息：应用需绑定小程序才可使用，尚未实现</li><li>[ ] 任务卡片消息：允许用户点击做出相应反馈的卡片，需绑定回调函数，尚未实现</li></ul></li><li><p><strong>群聊机器人消息推送</strong>：该推送仅会发送消息到企业微信群聊中，经测试，个人微信的企业群聊不会收到机器人发送的消息，因此要收到消息<strong>需安装企业微信</strong>，具体包括：</p><ul><li>[x] 文本消息：普通文字消息，最长不超过2048个字节</li><li>[x] 图片消息：图片大小不超过2M</li><li>[x] 图文消息：图片文字形式，带有跳转链接，适合打广告</li><li>[x] 文件消息：发送单个文件到群聊，大小在<code>5B~20MB</code>之间</li></ul></li></ul><h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>本项目已开源在github，地址：<a href="https://github.com/GentleCP/corpwechat-bot，更多使用方法参考github，欢迎提交PR和star">https://github.com/GentleCP/corpwechat-bot，更多使用方法参考github，欢迎提交PR和star</a> :)</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>python</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>python</tag>
+      
+      <tag>corpwechat</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>数据类创建与使用</title>
     <link href="/article/23726.html"/>
     <url>/article/23726.html</url>

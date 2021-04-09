@@ -22,7 +22,7 @@
   <meta name="author" content="GentleCP">
   <meta name="keywords" content="">
   
-  <title>【静态分析】数据流分析-Part III - 求索</title>
+  <title>【corpwechat-bot】一个好用的企业微信消息推送python接口库 - 求索</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -191,7 +191,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="【静态分析】数据流分析-Part III">
+            <span class="h2" id="subtitle" title="【corpwechat-bot】一个好用的企业微信消息推送python接口库">
               
             </span>
 
@@ -206,8 +206,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-03-31 10:28" pubdate>
-        2021年3月31日 上午
+      <time datetime="2021-04-09 15:37" pubdate>
+        2021年4月9日 下午
       </time>
     </span>
   
@@ -218,7 +218,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.5k 字
+      800 字
     </span>
   
 
@@ -228,7 +228,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      17
+      8
        分钟
     </span>
   
@@ -266,128 +266,50 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【静态分析】数据流分析-Part III</h1>
+            <h1 style="display: none">【corpwechat-bot】一个好用的企业微信消息推送python接口库</h1>
             
             <div class="markdown-body">
-              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇<a href="https://blog.gentlecp.com/article/1676.html">【静态分析】数据流分析-Part II - 求索</a> 对数据流分析中的<code>Live Variables Analysis</code>进行了详解，用于查找<code>used/unused variables</code>，本文继续第三部分内容（也是数据流分析的最后一部分内容）——<code>Available Expression Analysis</code>。主要内容包括：</p>
-<ul>
-<li><code>Available Expression Analysis</code>的定义和理解</li>
-<li><code>Available Expression Analysis</code>算法设计与详解</li>
-<li>举个栗子</li>
-<li>数据流分析中的三种分析方式对比</li>
-<li>总结</li>
-</ul>
-<p>读完本文回对数据流分析<code>Available Expression Analysis</code></p>
-<p>内容有一个初步的了解，解答<strong>是什么，怎么做，效果怎么样</strong>三方面的问题，同时作为最后一篇数据流分析的文章，会将前面两个部分与本文内容做一个整体的总结，以表格形式对比三者，加深对数据流分析三种分析方式的理解。</p>
-<blockquote>
-<p>本文中涉及的一些专业术语或定义可在<a href="https://blog.gentlecp.com/article/19520.html">Part I</a>中找到，强烈建议按顺序阅读前两篇文章，本文不再重复赘述</p>
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>corpwechat-bot</code>是一个<code>python</code>封装的企业机器人&amp;应用消息推送库，通过企业微信提供的api实现。</p>
+<p>利用本库，你可以轻松地实现从服务器端发送一条文本、图片、视频、<code>markdown</code>等等消息到你的微信手机端，而不依赖于其他的第三方应用，如<code>ServerChan</code>。</p>
+<h2 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h2><blockquote>
+<p><strong>注意</strong>，本项目依赖于企业微信创建群聊机器人或应用，要想实现需要先注册一个属于你自己的企业微信号，这十分简便，参照<a target="_blank" rel="noopener" href="https://work.weixin.qq.com/">官方网址</a>即可</p>
 </blockquote>
-<h2 id="Available-Expression-Analysis"><a href="#Available-Expression-Analysis" class="headerlink" title="Available Expression Analysis"></a>Available Expression Analysis</h2><p>即可用表达式分析，首先明确分析对象是表达式，类似<code>x op y</code>这种，下面看一下定义：</p>
-<div class="note note-info">
-            <p>对于给定的一个<code>program point</code> p，表达式可用的前提是：</p><ol><li>所有从<code>entry</code>到p的路径都必须经过对该表达式<code>x op y</code>的执行（也即该路径上必须至少出现一次该表达式）</li><li>在表达式<code>x op y</code> 最后一次执行之后，没有对x，y的重定义</li></ol>
-          </div>
-<p>用人话解释一下就是，在程序的某一阶段<code>program point p</code>，我们打算直接用某个变量去替代一个表达式了（避免多次计算），这就需要保证该表达式中涉及的变量没有发生变化（前提2），同时所有路径的表达式都要出现过且应该要一致（前提1），这样就能保证该变量与表达式计算的值是一致的。</p>
-<p>看一下下面的例子：</p>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210331111054.png" srcset="/img/loading.gif" alt="image-20210331111054673" style="zoom:50%;" /></p>
-<p>程序块输入<code>IN=&#123;a+b&#125;</code>，经过执行<code>a=x op y</code>后，添加新的表达式<code>x op y</code>到输出中，同时因为a被重定义了，所以表达式<code>a+b</code>从集合中去除，最终结果输出<code>OUT=&#123;x op y&#125;</code></p>
-<p>同样，针对<code>Available Expression Analysis</code>，也要明确<code>Abstraction</code>,<code>Transfer Function</code>,<code>Control Flow</code>。</p>
-<h3 id="Abstraction"><a href="#Abstraction" class="headerlink" title="Abstraction"></a>Abstraction</h3><p>对象是表达式，没得说了，假设有表达式<code>E1,E2,...En</code>，则定义1表示<code>available</code>，0表示<code>unavailable</code>，易得<code>bit vector</code>表示：<code>000..000</code></p>
-<h3 id="Transfer-Function"><a href="#Transfer-Function" class="headerlink" title="Transfer Function"></a>Transfer Function</h3><p>在前面的例子中已经体现出了<code>transfer function</code>的核心要点：</p>
-<ol>
-<li>将新的表达式$gen_B$加入输出中</li>
-<li>从输出中去除含重定义变量的表达式$def_B$</li>
-</ol>
-<p>因此，显然有：</p>
-<script type="math/tex; mode=display">OUT[B] = gen_B \bigcup (IN[B]-def_B)</script><p>关于先<code>gen</code>还是<code>kill</code>，就看语句的执行书顺序，例如：</p>
-<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># e.g. 1</span>
-x <span class="token operator">=</span> x <span class="token operator">+</span> y  <span class="token comment"># 先gen x+y，又因为x被redefined，kill x+y</span>
-
-<span class="token comment"># e.g. 2</span>
-a <span class="token operator">=</span> x <span class="token operator">+</span> y  <span class="token comment"># kill a的表达式</span>
-c <span class="token operator">=</span> a <span class="token operator">+</span> b  <span class="token comment"># 新生成a+b</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-<h3 id="Control-Flow"><a href="#Control-Flow" class="headerlink" title="Control Flow"></a>Control Flow</h3><p>这一块和之前两种分析方式都不一样了，因为根据定义，所有的path都应该要有该表达式的执行（假设存在一条路径没有，那么一旦执行到这条路径，某变量和表达式的值就不一定相等了），因此从多输出聚合到输入的过程中，应该采用交集：</p>
-<script type="math/tex; mode=display">IN[B] = \bigcap_{P\ a\ predecessor\ of\ B}OUT[P]</script><h2 id="Available-Expression-Analysis-算法设计"><a href="#Available-Expression-Analysis-算法设计" class="headerlink" title="Available Expression Analysis 算法设计"></a>Available Expression Analysis 算法设计</h2><p>有过前面两次的设计经验，这部分应该驾轻就熟了，输入输出都是差不多的，需要特别明确的一点是初始化的部分：</p>
-<ol>
-<li>一开始所有的<code>expression</code>都应该是<code>unavilable</code>，所以对$OUT[entry]=\phi$</li>
-<li>对所有<code>OUT[B]</code>就不一样了，因为前面说到我们要对所有前驱输出做交集得到下一<code>BB</code>的输入，如果初始化的时候前驱<code>BB</code>都是0，那意味着结果一定都为0，这样就没有起到对<code>IN[BB]</code>的更新效果，因此，除<code>entry</code>外的<code>BB</code>初始化$OUT[B] = \cup(1)$</li>
-</ol>
-<p>其他的实际上和<code>Reaching definition analysis</code>没什么差别，循环迭代直到<code>OUT</code>不再产生变化，具体算法描述如下：</p>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210331184554.png" srcset="/img/loading.gif" alt="image-20210331184554736"></p>
-<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>下面通过一个具体的样例来加深对算法过程的理解，与之前一样，受限于文章内容，只给出<strong>初始</strong>和<strong>结束</strong>状态：</p>
+<p>当你有了企业微信后，你还需要做一些配置，根据你自身的需求来做选择：</p>
 <ul>
-<li><strong>起始</strong>：假设某CFG如下：</li>
+<li><strong>应用消息推送</strong> ：应用消息推送需要在企业微信中创建一个第三方应用，<a target="_blank" rel="noopener" href="https://open.work.weixin.qq.com/wwopen/helpguide/detail?t=selfBuildApp">参照教程</a></li>
+<li><strong>群聊机器人消息推送</strong>：群聊机器人消息推送需要在你已有的企业群中添加一个机器人，然后获取相应的机器人<code>key</code>，<a target="_blank" rel="noopener" href="https://jingyan.baidu.com/article/d45ad148cc79eb28552b80b5.html">参照教程</a></li>
 </ul>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210331185623.png" srcset="/img/loading.gif" alt="image-20210331185623145"></p>
-<blockquote>
-<p>左上角是程序中出现的表达式</p>
-</blockquote>
+<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>下面是部分项目演示效果：</p>
 <ul>
-<li><strong>结束</strong></li>
+<li><strong>应用消息推送</strong><br><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210409154040.png" srcset="/img/loading.gif" alt="image-20210409154040566"></li>
+<li><strong>群聊机器人消息推送</strong><br><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210409154014.png" srcset="/img/loading.gif" alt="img_2.png"></li>
 </ul>
-<p><img src="https://gitee.com/gentlecp/ImgUrl/raw/master/20210331185715.png" srcset="/img/loading.gif" alt="image-20210331185715022"></p>
-<blockquote>
-<p>整个过程实际上基本上和<code>Reaching Definition Analysis</code>十分相近，只不过在初始化和<code>Transfer Function</code>,<code>Control Flow</code>的表达式上不同</p>
-</blockquote>
-<h2 id="三种分析方式对比"><a href="#三种分析方式对比" class="headerlink" title="三种分析方式对比"></a>三种分析方式对比</h2><p>下图展示了<code>Reaching Definition Analysis, Live Variables Analysis, Available Expression Analysis</code>三种分析方式的对比：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th></th>
-<th>Reaching Definitions</th>
-<th>Live Variables</th>
-<th>Available Expressions</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Domain</strong>(分析对象)</td>
-<td>definitions</td>
-<td>variables</td>
-<td>expressions</td>
-</tr>
-<tr>
-<td><strong>Direction</strong>(分析方向)</td>
-<td>forward</td>
-<td>backward</td>
-<td>forward</td>
-</tr>
-<tr>
-<td><strong>May/Must</strong>(存在/全部)</td>
-<td>may</td>
-<td>may</td>
-<td>must</td>
-</tr>
-<tr>
-<td><strong>Boundary</strong>(边界)</td>
-<td>$OUT[entry]=\phi$</td>
-<td>$IN[exit]=\phi$</td>
-<td>$OUT[entry]=\phi$</td>
-</tr>
-<tr>
-<td><strong>Initialization</strong>(初始化)</td>
-<td>$OUT[B]=\phi$</td>
-<td>$IN[B]=\phi$</td>
-<td>$OUT[B]=\cup$</td>
-</tr>
-<tr>
-<td><strong>Transfer Function</strong></td>
-<td>$OUT[B]=gen_B\bigcup(IN[B]-kill_B)$</td>
-<td>$IN[B]=use_B\bigcup(IN[B]-def_B)$</td>
-<td>$OUT[B]=gen_B\bigcup(IN[B]-def_B)$</td>
-</tr>
-<tr>
-<td><strong>Meet</strong>($\cup/\cap$)</td>
-<td>$\cup$</td>
-<td>$\cup$</td>
-<td>$\cap$</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文着重讲解了数据流分析中的<code>Available Expression Analysis</code>，包括其<strong>定义与理解，分析过程（算法），实际例子</strong>，该分析使得在编译优化的过程中可以避免对大量表达式进行重复计算，大大提升程序效率，文末还对现有的三种分析方式进行了对比。</p>
-<p>至此，数据流分析的三种分析已经全部结束，当然这些尚处于理论层次的理解，还需要通过实际的动手分析锻炼后才能将这些内容融会贯通，后续会添加我的手动实践笔记到博客中。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><sup><a href="#fn_1" id="reffn_1">1</a></sup> : <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/av97277892/?spm_id_from=333.788.b_765f64657363.3">南京大学《软件分析》课程04（Data Flow Analysis II）_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili</a></p>
+<h2 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h2><p>目前实现了两种推送消息方式，<strong>应用消息推送</strong>和<strong>群聊机器人消息推送</strong>，具体效果参考<a href="docs/usage.md">使用教程</a></p>
+<ul>
+<li><p><strong>应用消息推送</strong>：该推送会直接传至你的个人微信上，你会像收到好友消息一样收到通知信息，<strong>不需要安装企业微信</strong>，具体包括：</p>
+<ul>
+<li>[x] 文本消息: 最普通的消息，文字内容，最长不超过2048个字节</li>
+<li>[x] 图片消息：发送一张图片，可选<code>jpg,png</code>，大小不超过2MB，目前仅支持通过图片路径发送.</li>
+<li>[x] 语音消息：发送一条语音，大小不超过2MB，时长不超过60s，必须是<code>.amr</code>格式</li>
+<li>[x] 视频消息：发送一段视频，大小不超过10MB，必须是<code>.mp4</code>格式</li>
+<li>[x] 普通文件：其他类型的文件，大小不超过20MB（不小于5字节）</li>
+<li>[x] markdown消息：传输markdown类型消息</li>
+<li>[x] 图文消息：图片文字形式，带有跳转链接，适合做推广</li>
+<li>[x] 文本卡片消息：以卡片形式呈现的文本，包含跳转链接</li>
+<li>[ ] 小程序通知消息：应用需绑定小程序才可使用，尚未实现</li>
+<li>[ ] 任务卡片消息：允许用户点击做出相应反馈的卡片，需绑定回调函数，尚未实现</li>
+</ul>
+</li>
+<li><p><strong>群聊机器人消息推送</strong>：该推送仅会发送消息到企业微信群聊中，经测试，个人微信的企业群聊不会收到机器人发送的消息，因此要收到消息<strong>需安装企业微信</strong>，具体包括：</p>
+<ul>
+<li>[x] 文本消息：普通文字消息，最长不超过2048个字节</li>
+<li>[x] 图片消息：图片大小不超过2M</li>
+<li>[x] 图文消息：图片文字形式，带有跳转链接，适合打广告</li>
+<li>[x] 文件消息：发送单个文件到群聊，大小在<code>5B~20MB</code>之间</li>
+</ul>
+</li>
+</ul>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>本项目已开源在github，地址：<a target="_blank" rel="noopener" href="https://github.com/GentleCP/corpwechat-bot，更多使用方法参考github，欢迎提交PR和star">https://github.com/GentleCP/corpwechat-bot，更多使用方法参考github，欢迎提交PR和star</a> :)</p>
 
             </div>
             <hr>
@@ -397,7 +319,7 @@ c <span class="token operator">=</span> a <span class="token operator">+</span> 
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/security/">security</a>
+                      <a class="hover-with-bg" href="/categories/python/">python</a>
                     
                   </div>
                 
@@ -405,9 +327,9 @@ c <span class="token operator">=</span> a <span class="token operator">+</span> 
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/static-analysis/">static_analysis</a>
+                      <a class="hover-with-bg" href="/tags/python/">python</a>
                     
-                      <a class="hover-with-bg" href="/tags/available-expression-analysis/">available_expression_analysis</a>
+                      <a class="hover-with-bg" href="/tags/corpwechat/">corpwechat</a>
                     
                   </div>
                 
@@ -424,18 +346,12 @@ c <span class="token operator">=</span> a <span class="token operator">+</span> 
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/article/23726.html">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">数据类创建与使用</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/article/1676.html">
-                        <span class="hidden-mobile">【静态分析】数据流分析-Part II</span>
+                      <a href="/article/23726.html">
+                        <span class="hidden-mobile">数据类创建与使用</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -682,45 +598,6 @@ c <span class="token operator">=</span> a <span class="token operator">+</span> 
 
 
 
-
-  
-
-  
-    <!-- MathJax -->
-    <script>
-      MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
-        },
-        options: {
-          renderActions: {
-            findScript: [10, doc => {
-              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-                const display = !!node.type.match(/; *mode=display/);
-                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-                const text = document.createTextNode('');
-                node.parentNode.replaceChild(text, node);
-                math.start = { node: text, delim: '', n: 0 };
-                math.end = { node: text, delim: '', n: 0 };
-                doc.math.push(math);
-              });
-            }, '', false],
-            insertedScript: [200, () => {
-              document.querySelectorAll('mjx-container').forEach(node => {
-                let target = node.parentNode;
-                if (target.nodeName.toLowerCase() === 'li') {
-                  target.parentNode.classList.add('has-jax');
-                }
-              });
-            }, '', false]
-          }
-        }
-      };
-    </script>
-
-    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
-
-  
 
 
 
