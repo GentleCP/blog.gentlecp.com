@@ -1,0 +1,685 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210416092821.png">
+  <link rel="icon" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210416092821.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  
+    <meta name="description" content="记录我的学习和生活">
+  
+  <meta name="author" content="GentleCP">
+  <meta name="keywords" content="">
+  
+  <title>【angr】强大的二进制分析工具使用与练习 - 求索</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.gentlecp.com","root":"/","version":"1.8.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":"e327374203a31813ad9ef3899d6f3eb5","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="求索" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>求索|CP</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210430161149.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="【angr】强大的二进制分析工具使用与练习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      GentleCP
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-04-30 14:59" pubdate>
+        2021年4月30日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      15
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【angr】强大的二进制分析工具使用与练习</h1>
+            
+            <div class="markdown-body">
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文记录一下学习使用<code>angr</code>过程中的一些心得，主要是基于<code>Github</code>上 的开源项目<a target="_blank" rel="noopener" href="https://github.com/jakespringer/angr_ctf">jakespringer/angr_ctf</a>，该项目通过angr来解决一些ctf题，帮助初学者一步步熟悉<code>angr</code>的使用。相关的参考资料放在了文末，包括一些我认为讲解地不错的<code>angr</code>相关的文章。</p>
+<blockquote>
+<p>对于angr_ctf的使用，简单说明一下，每个题目都包括如下内容：</p>
+<ul>
+<li><code>xx_angr_xx.c.templite</code>: c源码模板文件</li>
+<li><code>generate.py</code>: 原仓库中没有现成的二进制文件，需要使用者通过执行<code>python generate.py 123 filename</code>的方式来手动编译（123是随机数，用于混淆）</li>
+<li><code>scaffoldxx.py</code>：解题提示，作者在关键位置用<code>???,...</code>的方式进行了替代，也可以看作是官方提供的解题模板</li>
+<li><code>solve.py</code>：位于<code>solutions</code>，是题解</li>
+</ul>
+</blockquote>
+<h2 id="00-angr-find"><a href="#00-angr-find" class="headerlink" title="00_angr_find"></a>00_angr_find</h2><p>直接拖到ida中查看一下源代码：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token builtin">int</span> __cdecl main<span class="token punctuation">(</span><span class="token builtin">int</span> argc<span class="token punctuation">,</span> const char <span class="token operator">**</span>argv<span class="token punctuation">,</span> const char <span class="token operator">**</span>envp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token builtin">int</span> i<span class="token punctuation">;</span> <span class="token operator">//</span> <span class="token punctuation">[</span>esp<span class="token operator">+</span>1Ch<span class="token punctuation">]</span> <span class="token punctuation">[</span>ebp<span class="token operator">-</span>1Ch<span class="token punctuation">]</span>
+  char s1<span class="token punctuation">[</span><span class="token number">9</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">//</span> <span class="token punctuation">[</span>esp<span class="token operator">+</span>23h<span class="token punctuation">]</span> <span class="token punctuation">[</span>ebp<span class="token operator">-</span>15h<span class="token punctuation">]</span>
+  unsigned <span class="token builtin">int</span> v6<span class="token punctuation">;</span> <span class="token operator">//</span> <span class="token punctuation">[</span>esp<span class="token operator">+</span>2Ch<span class="token punctuation">]</span> <span class="token punctuation">[</span>ebp<span class="token operator">-</span>Ch<span class="token punctuation">]</span>
+
+  v6 <span class="token operator">=</span> __readgsdword<span class="token punctuation">(</span>0x14u<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  printf<span class="token punctuation">(</span><span class="token string">"Enter the password: "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  __isoc99_scanf<span class="token punctuation">(</span><span class="token string">"%8s"</span><span class="token punctuation">,</span> s1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">7</span><span class="token punctuation">;</span> <span class="token operator">+</span><span class="token operator">+</span>i <span class="token punctuation">)</span>
+    s1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> complex_function<span class="token punctuation">(</span>s1<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> !strcmp<span class="token punctuation">(</span>s1<span class="token punctuation">,</span> <span class="token string">"DVNBCPLR"</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+    puts<span class="token punctuation">(</span><span class="token string">"Good Job."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">else</span>
+    puts<span class="token punctuation">(</span><span class="token string">"Try again."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    
+<span class="token builtin">int</span> __cdecl complex_function<span class="token punctuation">(</span>signed <span class="token builtin">int</span> a1<span class="token punctuation">,</span> <span class="token builtin">int</span> a2<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> a1 <span class="token operator">&lt;=</span> <span class="token number">64</span> <span class="token operator">|</span><span class="token operator">|</span> a1 <span class="token operator">></span> <span class="token number">90</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    puts<span class="token punctuation">(</span><span class="token string">"Try again."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    exit<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> a2 <span class="token operator">+</span> a1 <span class="token operator">-</span> <span class="token number">65</span><span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token number">26</span> <span class="token operator">+</span> <span class="token number">65</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>题意很简单，对一个输入的长度为7的字符串每一位做一个变换<code>complex_function</code>,然后和目标字符串<code>DVNBCPLR</code>比对，如果相同，则正确。同时还限制了字符的范围为<code>[64,90)</code>。</p>
+<ul>
+<li><p><strong>暴力破解</strong>    </p>
+<p>只需要一个双重for循环，第一层遍历字符串位数，第二层遍历可选的字符串，然后判断每一个变换后的字符与目标字符是否相等即可，解答如下：</p>
+</li>
+</ul>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">complex_function</span><span class="token punctuation">(</span>a1<span class="token punctuation">,</span> a2<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> a2 <span class="token operator">+</span> a1 <span class="token operator">-</span> <span class="token number">65</span><span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token number">26</span> <span class="token operator">+</span> <span class="token number">65</span>
+
+<span class="token keyword">def</span> <span class="token function">violence_solve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">'''
+    find a string, for each character in the string, after transfered by function complex_function, it will be the same as the target character in target_str(password)
+    :return:
+    '''</span>
+    target_str <span class="token operator">=</span> <span class="token string">'DVNBCPLR'</span>
+    flag <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">for</span> i<span class="token punctuation">,</span> v <span class="token keyword">in</span> <span class="token builtin">zip</span><span class="token punctuation">(</span><span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">,</span> target_str<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> j <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">64</span><span class="token punctuation">,</span> <span class="token number">90</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">if</span> <span class="token builtin">chr</span><span class="token punctuation">(</span>complex_function<span class="token punctuation">(</span>j<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">==</span> v<span class="token punctuation">:</span>
+                flag <span class="token operator">+=</span> <span class="token builtin">chr</span><span class="token punctuation">(</span>j<span class="token punctuation">)</span>
+                <span class="token keyword">break</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'[+] Success, flag is </span><span class="token interpolation"><span class="token punctuation">&#123;</span>flag<span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<ul>
+<li><p><strong>angr解答</strong>  </p>
+<p>angr的强大在于他能遍历程序的路径，找出能够执行制定路径的测试用例（核心就是符号执行的思想），因此我们只需要给定我们希望执行到的路径，然后拿到对应的输入用例即可。在本题中，希望执行的路径到达<code>puts(&quot;Good Job&quot;)</code>，只需要给angr提供对应该语句所在的内存地址（通过ida查看得到）：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210430153731.png" srcset="/img/loading.gif" alt=""></p>
+<p>下面对应题解中的代码辅以注释来理解整个过程中angr做的事情：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">angr_solve</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    path_to_binary <span class="token operator">=</span> <span class="token string">'00_angr_find'</span>  <span class="token comment"># 二进制文件路径</span>
+    project <span class="token operator">=</span> angr<span class="token punctuation">.</span>Project<span class="token punctuation">(</span>path_to_binary<span class="token punctuation">)</span>  <span class="token comment"># 将二进制文件装载成angr中指定的Project对象</span>
+	
+    <span class="token comment"># factory提供了Project对象的一系列调用接口，entry_state()则是提供了一个程序的实例镜像(SimState对象)，</span>
+    <span class="token comment"># 模拟程序执行某个时刻的状态（记录一系列程序运行时信息，如内存/寄存器/文件系统数据），一般我们选择程序的入口</span>
+    <span class="token comment"># 状态entry_state()即可，程序会从main函数开始运行</span>
+    initial_state <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>entry_state<span class="token punctuation">(</span><span class="token punctuation">)</span>  
+	
+    <span class="token comment"># 有了状态之后，我们需要模拟程序的运行，即用到`Simulation Managers`(缩写是simgr)，接受一个状态信息初始化，</span>
+    <span class="token comment"># 通过操控simgr达到模拟程序运行的目的</span>
+    simulation <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>simgr<span class="token punctuation">(</span>initial_state<span class="token punctuation">)</span>
+	
+    <span class="token comment"># 程序需要检索的目的地址，通过一个具体的内存地址，表示路径需要经过的节点，换言之，就是我们想要路径的限制条件</span>
+    <span class="token comment"># 通过simgr的explore()函数实现查找，这里的地址使用ida中看到的Good Job对应的内存地址</span>
+    print_good_address <span class="token operator">=</span> <span class="token number">0x08048678</span>  
+    simulation<span class="token punctuation">.</span>explore<span class="token punctuation">(</span>find<span class="token operator">=</span>print_good_address<span class="token punctuation">)</span>
+	
+    <span class="token comment"># simgr会把找到的符合要求的路径存储在found中，取第一个找到的状态，posix.dumps(sys.stdin.fileno())则是</span>
+    <span class="token comment"># 获取当前状态下stdin输入的数据，即程序的输入值</span>
+    <span class="token keyword">if</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">:</span>
+        solution_state <span class="token operator">=</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+        solution <span class="token operator">=</span> solution_state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># sys.stdin.fileno() 代表程序的标准输入，具体值为0</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'[+] Success, flag is &#123;&#125;'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>solution<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'Could not find the solution'</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>由该题解我们也可以对angr分析程序的过程由一个基本的映像：</p>
+<ol>
+<li>加载二进制文件为<code>Project</code>对象</li>
+<li>获取程序的初始化状态<code>state</code></li>
+<li>创建程序的模拟管理器<code>simgr</code>，用于控制程序的模拟运行，从我们提供的初始化状态<code>state</code>开始</li>
+<li>设定要<code>find</code>的路径(通过内存地址的限制方式或其他)，记录该路径下的<code>state</code>信息，执行<code>expolre</code></li>
+<li>检查路径查找结果，获取路径相应的状态信息，并从<code>state</code>中提取需要的信息（如标准输入的值）</li>
+</ol>
+</li>
+</ul>
+<p>到此，这个题算是做完了，但对于<code>angr</code>的理解目前也仅仅是会用一点而已，后面根据更多的题目练习来加深对<code>angr</code>的掌握，同时慢慢理解其内部的运行机制。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/security/">security</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/static-analysis/">static_analysis</a>
+                    
+                      <a class="hover-with-bg" href="/tags/binary/">binary</a>
+                    
+                      <a class="hover-with-bg" href="/tags/symbolic-execution/">symbolic_execution</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/article/22468.html">
+                        <span class="hidden-mobile">【corpwechat-bot】一个好用的企业微信消息推送python接口库</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'GentleCP/blog.gentlecp.com');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://www.gentlecp.com" target="_blank" rel="nofollow noopener"><span>主站</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/GentleCP/blog.gentlecp.com" target="_blank" rel="nofollow noopener"><span>Repo</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        京ICP证123456号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" alt="police-icon"/>
+            
+            <span>浙ICP备19022407号-1</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/baidu.js"></script>
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

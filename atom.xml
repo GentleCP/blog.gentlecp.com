@@ -6,7 +6,7 @@
   <link href="https://blog.gentlecp.com/atom.xml" rel="self"/>
   
   <link href="https://blog.gentlecp.com/"/>
-  <updated>2021-04-29T15:11:43.063Z</updated>
+  <updated>2021-04-30T08:09:37.268Z</updated>
   <id>https://blog.gentlecp.com/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>【angr】强大的二进制分析工具使用与练习</title>
+    <link href="https://blog.gentlecp.com/article/61784.html"/>
+    <id>https://blog.gentlecp.com/article/61784.html</id>
+    <published>2021-04-30T06:59:42.000Z</published>
+    <updated>2021-04-30T08:09:37.268Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;本文记录一下学习使用&lt;code&gt;angr&lt;/code&gt;过程中的一些心得，主要是基于&lt;code&gt;Github&lt;/code&gt;上 的开源项目&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="security" scheme="https://blog.gentlecp.com/categories/security/"/>
+    
+    
+    <category term="static_analysis" scheme="https://blog.gentlecp.com/tags/static-analysis/"/>
+    
+    <category term="binary" scheme="https://blog.gentlecp.com/tags/binary/"/>
+    
+    <category term="symbolic_execution" scheme="https://blog.gentlecp.com/tags/symbolic-execution/"/>
+    
+  </entry>
   
   <entry>
     <title>【corpwechat-bot】一个好用的企业微信消息推送python接口库</title>
