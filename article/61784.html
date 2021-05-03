@@ -219,7 +219,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      5.6k 字
+      7k 字
     </span>
   
 
@@ -229,7 +229,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      80
+      100
        分钟
     </span>
   
@@ -270,7 +270,8 @@
             <h1 style="display: none">【angr_ctf】二进制分析工具angr使用与练习-Part I（基础篇）</h1>
             
             <div class="markdown-body">
-              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文记录一下学习使用<code>angr</code>过程中的一些心得，主要是基于<code>Github</code>上 的开源项目<a target="_blank" rel="noopener" href="https://github.com/jakespringer/angr_ctf">jakespringer/angr_ctf</a>，该项目通过angr来解决一些ctf题，帮助初学者一步步熟悉<code>angr</code>的使用。相关的参考资料放在了文末，包括一些我认为讲解地不错的<code>angr</code>相关的文章。所有题解我打算分成<strong>基础篇</strong>，<strong>提高篇</strong>，<strong>进阶篇</strong>三个部分，对应三篇文章来完成，本文属于<strong>基础篇</strong>。</p>
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文记录一下学习使用<code>angr</code>过程中的一些心得，主要是基于<code>Github</code>上 的开源项目<a target="_blank" rel="noopener" href="https://github.com/jakespringer/angr_ctf">jakespringer/angr_ctf</a><sup id="fnref:3" class="footnote-ref"><a href="#fn:3" rel="footnote"><span class="hint--top hint--rounded" aria-label="jakespringer/angr_ctf (github.com)
+">[3]</span></a></sup>，该项目通过angr来解决一些ctf题，帮助初学者一步步熟悉<code>angr</code>的使用。相关的参考资料放在了文末，包括一些我认为讲解地不错的<code>angr</code>相关的文章。所有题解我打算分成<strong>基础篇</strong>，<strong>提高篇</strong>，<strong>进阶篇</strong>三个部分，对应三篇文章来完成，本文属于<strong>基础篇</strong>。</p>
 <div class="note note-warning">
             <p>由于本人也是初学，文章中许多理解都是建于参考资料和个人的思考上，难免存在纰漏或理解不正确的地方，望大佬发现后能及时指出，不胜感激🙏</p>
           </div>
@@ -1022,8 +1023,29 @@
 <p>可以看到在<code>bss</code>段中，四个变量顺序存储（间隔为8字节），<code>user_input</code>起始地址<code>09FD92A0</code>就是我们要“空降”的位置。<code>angr</code>允许通过操作内存，插入符号变量，主要通过<code>memory</code>的两个接口（单位为<code>bytes</code>）：</p>
 <ul>
 <li><code>load(addr,...)</code>: 读取指定地址的内存</li>
+</ul>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">load</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> addr<span class="token punctuation">,</span> size<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> condition<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> fallback<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> add_constraints<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> action<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> 	      endness<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> inspect<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> disable_actions<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span> ret_on_segv<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    Loads size bytes from dst.
+        :param addr:             The address to load from. 
+        :param size:            The size (in bytes) of the load. 
+        :param condition:       A claripy expression representing a condition for a conditional load.
+        :param fallback:        A fallback value if the condition ends up being False. 
+        :param add_constraints: Add constraints resulting from the merge (default: True).
+        :param action:          A SimActionData to fill out with the constraints.
+        :param endness:         The endness to load with. 
+    """</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<ul>
 <li><code>store(addr, ...)</code>: 向指定内存写入数据</li>
 </ul>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">store</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> addr<span class="token punctuation">,</span> data<span class="token punctuation">,</span> size<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> condition<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> add_constraints<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> endness<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> action<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span>
+              inspect<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">,</span> priv<span class="token operator">=</span><span class="token boolean">None</span><span class="token punctuation">,</span> disable_actions<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token string">""</span>"
+        Stores content into memory<span class="token punctuation">.</span>
+        <span class="token punctuation">:</span>param addr<span class="token punctuation">:</span>        A claripy expression representing the address to store at<span class="token punctuation">.</span> 
+        <span class="token punctuation">:</span>param data<span class="token punctuation">:</span>        The data to store <span class="token punctuation">(</span>claripy expression <span class="token keyword">or</span> something convertable to a claripy expression<span class="token punctuation">)</span><span class="token punctuation">.</span>
+        <span class="token punctuation">:</span>param size<span class="token punctuation">:</span>        A claripy expression representing the size of the data to store<span class="token punctuation">.</span> <span class="token comment">#大小</span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
 <p>下面是完整的题解，我在必要的地方添加了注释，帮助理解</p>
 <div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> angr
 <span class="token keyword">import</span> claripy
@@ -1081,11 +1103,132 @@
 <span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
     main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
 <p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210502150212.png" srcset="/img/loading.gif" alt=""></p>
-<h2 id="06-angr"><a href="#06-angr" class="headerlink" title="06_angr"></a>06_angr</h2><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><section class="footnotes"><h2>参考</h2><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://github.com/ZERO-A-ONE/AngrCTF_FITM/blob/master/笔记/01/Angr_CTF从入门到精通（一）.md">AngrCTF_FITM/Angr_CTF从入门到精通（一）.md at master · ZERO-A-ONE/AngrCTF_FITM (github.com)</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section></li>
-</ul>
+<h2 id="06-angr-symbolic-dynamic-memory"><a href="#06-angr-symbolic-dynamic-memory" class="headerlink" title="06_angr_symbolic_dynamic_memory"></a>06_angr_symbolic_dynamic_memory</h2><p>本题和上题相似，只不过不再由堆栈分配内存，而是<code>molloc</code>动态分配，先看下源码：</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> __cdecl <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>envp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">char</span> <span class="token operator">*</span>v3<span class="token punctuation">;</span> <span class="token comment">// ebx</span>
+  <span class="token keyword">char</span> <span class="token operator">*</span>v4<span class="token punctuation">;</span> <span class="token comment">// ebx</span>
+  <span class="token keyword">int</span> v6<span class="token punctuation">;</span> <span class="token comment">// [esp-10h] [ebp-1Ch]</span>
+  <span class="token keyword">int</span> i<span class="token punctuation">;</span> <span class="token comment">// [esp+0h] [ebp-Ch]</span>
 
+  buffer0 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">9u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  buffer1 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">9u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">memset</span><span class="token punctuation">(</span>buffer0<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">9u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">memset</span><span class="token punctuation">(</span>buffer1<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">9u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Enter the password: "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%8s %8s"</span><span class="token punctuation">,</span> buffer0<span class="token punctuation">,</span> buffer1<span class="token punctuation">,</span> v6<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">7</span><span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    v3 <span class="token operator">=</span> <span class="token operator">&amp;</span>buffer0<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>v3 <span class="token operator">=</span> <span class="token function">complex_function</span><span class="token punctuation">(</span>buffer0<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    v4 <span class="token operator">=</span> <span class="token operator">&amp;</span>buffer1<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>v4 <span class="token operator">=</span> <span class="token function">complex_function</span><span class="token punctuation">(</span>buffer1<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> i <span class="token operator">+</span> <span class="token number">32</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">!</span><span class="token function">strncmp</span><span class="token punctuation">(</span>buffer0<span class="token punctuation">,</span> <span class="token string">"ZTWVXHOA"</span><span class="token punctuation">,</span> <span class="token number">8u</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token function">strncmp</span><span class="token punctuation">(</span>buffer1<span class="token punctuation">,</span> <span class="token string">"HHPPETFV"</span><span class="token punctuation">,</span> <span class="token number">8u</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Good Job."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">else</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Try again."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">free</span><span class="token punctuation">(</span>buffer0<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">free</span><span class="token punctuation">(</span>buffer1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">int</span> __cdecl <span class="token function">complex_function</span><span class="token punctuation">(</span><span class="token keyword">signed</span> <span class="token keyword">int</span> a1<span class="token punctuation">,</span> <span class="token keyword">int</span> a2<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> a1 <span class="token operator">&lt;=</span> <span class="token number">64</span> <span class="token operator">||</span> a1 <span class="token operator">></span> <span class="token number">90</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Try again."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token number">13</span> <span class="token operator">*</span> a2 <span class="token operator">+</span> a1 <span class="token operator">-</span> <span class="token number">65</span><span class="token punctuation">)</span> <span class="token operator">%</span> <span class="token number">26</span> <span class="token operator">+</span> <span class="token number">65</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>程序动态创建两个9字节的缓冲区，输入两个字符串，并以8字节存储输入缓冲区，对缓冲区中的数据进行<code>complex_function</code>变换，将变换后的字符串与指定的两个字符串比较。</p>
+<p>先确定一下我们需要开始的地址（即空降位置），找到<code>scanf</code>函数，选择下面第一个或第二个地址即可：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210503104737.png" srcset="/img/loading.gif" alt=""></p>
+<p>记录地址<code>08048696</code>，这是之后的<code>start_address</code>，由于我们直接从该处模拟执行，因此前面的代码不会被执行，即</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c">buffer0 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">9u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+buffer1 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">9u</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<p>上面是<code>molloc</code>函数为<code>buffer</code>动态分配地址的代码， 由于不被执行，因此我们需要手动地给<code>buffer0,buffer1</code>指向一个地址（虚拟地址），相当于模拟了<code>molloc</code>的操作，检查<code>ida</code>中<code>buffer0, buffer1</code>的地址如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210503105221.png" srcset="/img/loading.gif" alt=""></p>
+<p>这两个地址是<code>buffer0, buffer1</code>本身被存放的内存地址，我们需要让他们存储的内容是我们提供的虚拟地址，可以通过<code>memory.store(add,data)</code>的方式往这两个指定内存地址写入我们的虚拟地址。</p>
+<blockquote>
+<p>这部分可能有点混乱，我们可以思考一下正常程序执行时候的地址指向：</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c">buffer0 <span class="token operator">-></span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span>分配地址 <span class="token operator">-></span> string0
+buffer1 <span class="token operator">-></span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token punctuation">)</span>分配地址 <span class="token operator">-></span> string1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+<p>由于angr模拟执行的时候没有<code>molloc</code>分配的环节，即 $buffer\to \cancel{malloc} -&gt; string$ ，因此我们需要在<code>buffer</code>真实存储的位置填写一个<code>fake_addr</code>(任意，只要不被使用即可)，并让其指向<code>string</code>符号变量，如下</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c">buffer0 <span class="token operator">-></span> fake_addr <span class="token operator">-></span> string0
+buffer1 <span class="token operator">-></span> fake_addr <span class="token operator">-></span> string1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre></div>
+</blockquote>
+<p>下面是题解，我会在必要地方添加注释，帮助理解：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> angr
+<span class="token keyword">import</span> claripy
+<span class="token keyword">import</span> sys
+
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    path_to_binary <span class="token operator">=</span> <span class="token string">'06_angr_symbolic_dynamic_memeory'</span>
+    project <span class="token operator">=</span> angr<span class="token punctuation">.</span>Project<span class="token punctuation">(</span>path_to_binary<span class="token punctuation">)</span>
+
+    start_address <span class="token operator">=</span> <span class="token number">0x08048696</span>
+    initial_state <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>blank_state<span class="token punctuation">(</span>addr<span class="token operator">=</span>start_address<span class="token punctuation">)</span>
+
+    passwd_size_in_bits <span class="token operator">=</span> <span class="token number">8</span> <span class="token operator">*</span> <span class="token number">8</span>
+    password0 <span class="token operator">=</span> claripy<span class="token punctuation">.</span>BVS<span class="token punctuation">(</span><span class="token string">'password0'</span><span class="token punctuation">,</span> passwd_size_in_bits<span class="token punctuation">)</span>
+    password1 <span class="token operator">=</span> claripy<span class="token punctuation">.</span>BVS<span class="token punctuation">(</span><span class="token string">'password1'</span><span class="token punctuation">,</span> passwd_size_in_bits<span class="token punctuation">)</span>
+
+    <span class="token comment"># 这里我们提供一个fake_addr（任意不影响现有地址即可），让buffer指向它，模拟malloc操作</span>
+    fake_heap_address0 <span class="token operator">=</span> <span class="token number">0xffffc93c</span>
+    pointer_to_malloc_memory_address0 <span class="token operator">=</span> <span class="token number">0x09FD92AC</span>   <span class="token comment"># 该地址为buffer0的地址</span>
+    <span class="token comment">#　angr默认大端，开源直接用project.arch.memory_endness 设置和程序一样</span>
+    initial_state<span class="token punctuation">.</span>memory<span class="token punctuation">.</span>store<span class="token punctuation">(</span>pointer_to_malloc_memory_address0<span class="token punctuation">,</span> fake_heap_address0<span class="token punctuation">,</span> endness<span class="token operator">=</span>project<span class="token punctuation">.</span>arch<span class="token punctuation">.</span>memory_endness<span class="token punctuation">)</span>
+
+    fake_heap_address1 <span class="token operator">=</span> <span class="token number">0xffffc94c</span>
+    pointer_to_malloc_memory_address1 <span class="token operator">=</span> <span class="token number">0x09FD92B4</span>  <span class="token comment"># 该地址为buffer0的地址</span>
+    <span class="token comment"># 　angr默认大端，开源直接用project.arch.memory_endness 设置和程序一样</span>
+    initial_state<span class="token punctuation">.</span>memory<span class="token punctuation">.</span>store<span class="token punctuation">(</span>pointer_to_malloc_memory_address1<span class="token punctuation">,</span> fake_heap_address1<span class="token punctuation">,</span> endness<span class="token operator">=</span>project<span class="token punctuation">.</span>arch<span class="token punctuation">.</span>memory_endness<span class="token punctuation">)</span>
+
+    <span class="token comment"># 将我们需要的符号变量插入到我们提供的fake_address中，这样在执行的时候就会自动将这部分的变量取出</span>
+    initial_state<span class="token punctuation">.</span>memory<span class="token punctuation">.</span>store<span class="token punctuation">(</span>fake_heap_address0<span class="token punctuation">,</span> password0<span class="token punctuation">)</span>
+    initial_state<span class="token punctuation">.</span>memory<span class="token punctuation">.</span>store<span class="token punctuation">(</span>fake_heap_address1<span class="token punctuation">,</span> password1<span class="token punctuation">)</span>
+
+    simulation <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>simgr<span class="token punctuation">(</span>initial_state<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">is_successful</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        stdout_output <span class="token operator">=</span> state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span> <span class="token keyword">if</span> <span class="token string">'Good Job.'</span> <span class="token keyword">in</span> stdout_output<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">False</span>
+
+    <span class="token keyword">def</span> <span class="token function">should_abort</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        stdout_output <span class="token operator">=</span> state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span> <span class="token keyword">if</span> <span class="token string">'Try again.'</span> <span class="token keyword">in</span> stdout_output<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">False</span>
+
+    simulation<span class="token punctuation">.</span>explore<span class="token punctuation">(</span>find<span class="token operator">=</span>is_successful<span class="token punctuation">,</span> avoid<span class="token operator">=</span>should_abort<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">:</span>
+        solution_state <span class="token operator">=</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+        <span class="token comment"># cast_to=bytes 是将原本8字节存储数据按照bytes显示，最后decode转换成普通字符串</span>
+        solution0 <span class="token operator">=</span> solution_state<span class="token punctuation">.</span>solver<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span>password0<span class="token punctuation">,</span> cast_to<span class="token operator">=</span><span class="token builtin">bytes</span><span class="token punctuation">)</span><span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span>
+        solution1 <span class="token operator">=</span> solution_state<span class="token punctuation">.</span>solver<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span>password1<span class="token punctuation">,</span> cast_to<span class="token operator">=</span><span class="token builtin">bytes</span><span class="token punctuation">)</span><span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[+] Success, flag is: &#123;&#125; &#123;&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>solution0<span class="token punctuation">,</span> solution1<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'Could not find the solution'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210503111134.png" srcset="/img/loading.gif" alt=""></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文主要撰写练习了<code>angr_ctf</code>中的前6道题目，这里对他们分别简单总结一下：</p>
+<ul>
+<li><strong>angr_find</strong>：最简单的根据地址查找路径，提供一个想要执行路径相关的地址，解析得到对应的测试用例</li>
+<li><strong>angr_void</strong>：在<code>find</code>的基础上，添加了不希望执行的路径信息（该路径上一个相关地址），在大型程序中能够大大提高执行效率</li>
+<li><strong>angr_find_condition</strong>: 按照条件执行路径，如需要分支输出特定的结果才去执行，这避免了找一堆执行路径相关地址的麻烦</li>
+<li><strong>angr_symbolic_registers</strong>: 将angr符号变量直接写入寄存器中，此时不再需要从程序入口点<code>main</code>进入，可以跳过许多不相关的代码，后面的几题基本也是围绕输入数据存储在哪，如何直接“空降”到指定位置，并让程序正常模拟执行。</li>
+<li><strong>angr_symbolic_stack</strong>: 输入结果不再保存到寄存器，而是存储到栈中，需要添加对栈的操作，手动将符号变量压入栈</li>
+<li><strong>angr_symbolic_memory</strong>: 直接修改内存中保存的内容，学习<code>memory.store()</code>的使用</li>
+<li><strong>angr_symbolic_dynamic_memory</strong>: 模拟<code>malloc</code>动态分配内存地址，提供<code>fake_address</code></li>
+</ul>
+<section class="footnotes"><h2>参考</h2><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://github.com/ZERO-A-ONE/AngrCTF_FITM/blob/master/笔记/01/Angr_CTF从入门到精通（一）.md">AngrCTF_FITM/Angr_CTF从入门到精通（一）.md at master · ZERO-A-ONE/AngrCTF_FITM (github.com)</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://github.com/lcatro/Angr-CTF-Learn-Note">lcatro/Angr-CTF-Learn-Note: The learn note of Angr-CTF .. (github.com)</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://github.com/jakespringer/angr_ctf">jakespringer/angr_ctf (github.com)</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
             </div>
             <hr>
             <div>
@@ -1375,6 +1518,45 @@
 
 
 
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
+
+  
 
 
 
