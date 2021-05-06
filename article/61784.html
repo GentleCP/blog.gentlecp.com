@@ -219,7 +219,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      7k 字
+      7.9k 字
     </span>
   
 
@@ -229,7 +229,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      101
+      112
        分钟
     </span>
   
@@ -1218,6 +1218,105 @@ buffer1 <span class="token operator">-></span> fake_addr <span class="token oper
 <span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
     main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
 <p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210503111134.png" srcset="/img/loading.gif" alt=""></p>
+<h2 id="07-angr-symbolic-file"><a href="#07-angr-symbolic-file" class="headerlink" title="07_angr_symbolic_file"></a>07_angr_symbolic_file</h2><p>查看反编译代码：</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> __cdecl __noreturn <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>envp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">signed</span> <span class="token keyword">int</span> i<span class="token punctuation">;</span> <span class="token comment">// [esp+Ch] [ebp-Ch]</span>
+
+  <span class="token function">memset</span><span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0x40u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Enter the password: "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%64s"</span><span class="token punctuation">,</span> buffer<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">ignore_me</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span>buffer<span class="token punctuation">,</span> <span class="token number">0x40u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">memset</span><span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0x40u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  fp <span class="token operator">=</span> <span class="token function">fopen</span><span class="token punctuation">(</span><span class="token string">"MRXJKZYR.txt"</span><span class="token punctuation">,</span> <span class="token string">"rb"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">fread</span><span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token number">1u</span><span class="token punctuation">,</span> <span class="token number">0x40u</span><span class="token punctuation">,</span> fp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">fclose</span><span class="token punctuation">(</span>fp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">unlink</span><span class="token punctuation">(</span><span class="token string">"MRXJKZYR.txt"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">7</span><span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
+    <span class="token operator">*</span><span class="token punctuation">(</span>_BYTE <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>i <span class="token operator">+</span> <span class="token number">134520992</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token function">complex_function</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>i <span class="token operator">+</span> <span class="token number">134520992</span><span class="token punctuation">)</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">strncmp</span><span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token string">"YLYSSSEV"</span><span class="token punctuation">,</span> <span class="token number">9u</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Try again."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Good Job."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>程序本身的工作很好理解：</p>
+<ol>
+<li>读取用户输入的一个64字节的字符串，将其写入到文件<code>MRXJKZYR.txt</code></li>
+<li>读取文件<code>MRXJKZYR.txt</code>中的数据，对读取的数据进行<code>complex_fucntion</code>变换</li>
+<li>将结果与目标字符串比较是否符合条件</li>
+</ol>
+<p>跟以往几题不同的是，这次不再是直接的终端输入了，而是从文件中读取数据，因此，我们需要模拟一个文件，对文件进行符号化。</p>
+<p>在<code>angr</code>中，对文件系统进行模拟需要通过<code>angr.storage.SimFile(name, content, size)</code>对象，接收三个参数：</p>
+<ul>
+<li><code>name</code>： 要模拟的文件名称</li>
+<li><code>content:Optional</code>：模拟的文件内容，通常传入的是一个<code>BV(bitvector)</code>对象，表示符号化的变量，也可以传入<code>string</code></li>
+<li><code>size:Optional</code>：文件的大小</li>
+</ul>
+<p>当完成文件的模拟后，就像我们生成一个符号变量之后需要将其添加到<code>state</code>中的指定位置（如<strong>寄存器，内存，栈</strong>）一样（将符号化变量添加到初始化状态中），生成的模拟文件也需要添加到指定的<code>state</code>当中，添加的方式有两种：</p>
+<ol>
+<li>利用<code>state.fs.insert(filename, simfile)</code>方法：传入文件名和相应的模拟文件对象(<code>SimFile</code>)，类似于之前<code>state.memory.store(fake_heap_address0, passwd0)</code>这部分操作</li>
+<li>利用<code>state.pofix.fs</code>选项以文件名的字典来预配置<code>SimFile</code></li>
+</ol>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python">symbolic_filesystem <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token string">'filename'</span> <span class="token punctuation">:</span> simfile
+<span class="token punctuation">&#125;</span>
+state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>fs <span class="token operator">=</span> symbolic_filesystem<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>上面的两部分操作分别对应之前的创建符号变量(<code>BV</code>)和将符号变量插入到指定位置中，可以将前面的题目与这部分相应位置对比帮助自己理解这个过程，如下图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210504122631.png" srcset="/img/loading.gif" alt=""></p>
+<p>还有一个重要的地方是起始地址的选择，程序在第一次<code>scanf</code>输入之后，执行<code>ignore_me</code>，我们的符号变量模拟的是此<code>scanf</code>的输入，选择调用<code>scanf</code>结束之后的地址即可。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210504122151.png" srcset="/img/loading.gif" alt=""></p>
+<p>这里我采用了<code>0x80488D3</code></p>
+<p>下面是题解，我在必要的地方添加了注释，帮助理解：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> angr
+<span class="token keyword">import</span> claripy
+<span class="token keyword">import</span> sys
+
+<span class="token comment">#</span>
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    path_to_binary <span class="token operator">=</span> <span class="token string">"./07_angr_symbolic_file"</span>
+    project <span class="token operator">=</span> angr<span class="token punctuation">.</span>Project<span class="token punctuation">(</span>path_to_binary<span class="token punctuation">,</span> auto_load_libs<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># 起始地址选取</span>
+    start_address <span class="token operator">=</span> <span class="token number">0x80488D3</span>
+    initial_state <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>blank_state<span class="token punctuation">(</span>addr<span class="token operator">=</span>start_address<span class="token punctuation">)</span>
+
+    <span class="token comment"># 文件名</span>
+    filename <span class="token operator">=</span> <span class="token string">'MRXJKZYR.txt'</span>
+    <span class="token comment">#　输入为64字节,0x40</span>
+    symbolic_file_size_bytes <span class="token operator">=</span> <span class="token number">64</span>
+    <span class="token comment">#　创建BV的时候单位以字节计算，因此要×8</span>
+    password0 <span class="token operator">=</span> claripy<span class="token punctuation">.</span>BVS<span class="token punctuation">(</span><span class="token string">'password'</span><span class="token punctuation">,</span> symbolic_file_size_bytes <span class="token operator">*</span> <span class="token number">8</span><span class="token punctuation">)</span>
+    <span class="token comment"># 模拟文件，将符号变量作为content添加进去</span>
+    simfile <span class="token operator">=</span> angr<span class="token punctuation">.</span>storage<span class="token punctuation">.</span>SimFile<span class="token punctuation">(</span>filename<span class="token punctuation">,</span> content<span class="token operator">=</span>password0<span class="token punctuation">,</span> size<span class="token operator">=</span>symbolic_file_size_bytes<span class="token punctuation">)</span>
+    <span class="token comment">#　将模拟文件插入到初始化状态中</span>
+    initial_state<span class="token punctuation">.</span>fs<span class="token punctuation">.</span>insert<span class="token punctuation">(</span>filename<span class="token punctuation">,</span> simfile<span class="token punctuation">)</span>
+
+    simulation <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>simgr<span class="token punctuation">(</span>initial_state<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">is_successful</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        stdout_output <span class="token operator">=</span> state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span> <span class="token keyword">if</span> <span class="token string">'Good Job.'</span> <span class="token keyword">in</span> stdout_output<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">False</span>
+
+    <span class="token keyword">def</span> <span class="token function">should_abort</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        stdout_output <span class="token operator">=</span> state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span> <span class="token keyword">if</span> <span class="token string">'Try again.'</span> <span class="token keyword">in</span> stdout_output<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">False</span>
+
+    simulation<span class="token punctuation">.</span>explore<span class="token punctuation">(</span>find<span class="token operator">=</span>is_successful<span class="token punctuation">,</span> avoid<span class="token operator">=</span>should_abort<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">:</span>
+        solution_state <span class="token operator">=</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+        <span class="token comment"># cast_to=bytes 是将原本8字节存储数据按照bytes显示，最后decode转换成普通字符串</span>
+        solution0 <span class="token operator">=</span> solution_state<span class="token punctuation">.</span>solver<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span>password0<span class="token punctuation">,</span> cast_to<span class="token operator">=</span><span class="token builtin">bytes</span><span class="token punctuation">)</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"[+] Success, flag is: &#123;:.8s&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>solution0<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'Could not find the solution'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210504122312.png" srcset="/img/loading.gif" alt=""></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文主要撰写练习了<code>angr_ctf</code>中的前6道题目，这里对他们分别简单总结一下：</p>
 <ul>
 <li><strong>angr_find</strong>：最简单的根据地址查找路径，提供一个想要执行路径相关的地址，解析得到对应的测试用例</li>
@@ -1226,7 +1325,10 @@ buffer1 <span class="token operator">-></span> fake_addr <span class="token oper
 <li><strong>angr_symbolic_registers</strong>: 将angr符号变量直接写入寄存器中，此时不再需要从程序入口点<code>main</code>进入，可以跳过许多不相关的代码，后面的几题基本也是围绕输入数据存储在哪，如何直接“空降”到指定位置，并让程序正常模拟执行。</li>
 <li><strong>angr_symbolic_stack</strong>: 输入结果不再保存到寄存器，而是存储到栈中，需要添加对栈的操作，手动将符号变量压入栈</li>
 <li><strong>angr_symbolic_memory</strong>: 直接修改内存中保存的内容，学习<code>memory.store()</code>的使用</li>
-<li><strong>angr_symbolic_dynamic_memory</strong>: 模拟<code>malloc</code>动态分配内存地址，提供<code>fake_address</code></li>
+<li><p><strong>angr_symbolic_dynamic_memory</strong>: 模拟<code>malloc</code>动态分配内存地址，提供<code>fake_address</code>（替代<code>malloc</code>分配地址空间）</p>
+</li>
+<li><p><strong>angr_symbolic_file</strong>：使用<code>angr</code>的模拟文件系统，实现对文件数据的符号化</p>
+</li>
 </ul>
 <section class="footnotes"><h2>参考</h2><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://github.com/ZERO-A-ONE/AngrCTF_FITM/blob/master/笔记/01/Angr_CTF从入门到精通（一）.md">AngrCTF_FITM/Angr_CTF从入门到精通（一）.md at master · ZERO-A-ONE/AngrCTF_FITM (github.com)</a>
 <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://github.com/lcatro/Angr-CTF-Learn-Note">lcatro/Angr-CTF-Learn-Note: The learn note of Angr-CTF .. (github.com)</a>
@@ -1268,6 +1370,12 @@ buffer1 <span class="token operator">-></span> fake_addr <span class="token oper
                 <div class="post-prevnext">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/article/3571.html">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【angr_ctf】二进制分析工具angr使用与练习-Part II（提高篇）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
