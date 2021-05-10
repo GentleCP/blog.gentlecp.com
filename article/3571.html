@@ -219,7 +219,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.9k 字
+      3.9k 字
     </span>
   
 
@@ -229,7 +229,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      25
+      52
        分钟
     </span>
   
@@ -437,6 +437,25 @@ _BOOL4 __cdecl <span class="token function">check_equals_MRXJKZYRKMKENFZB</span>
 <blockquote>
 <p>关于<code>angr</code>中<code>hook</code>的具体使用可以参考<a target="_blank" rel="noopener" href="https://docs.angr.io/extending-angr/simprocedures#user-hooks">Programming SimProcedures - angr Documentation</a> </p>
 </blockquote>
+<div class="note note-info">
+            <p><code>angr</code>中对于<code>hook</code>的使用有两种方式：</p><ul><li><p>一是装饰器：传入需要<code>hook</code>的地址和要跳过的指令长度，当程序执行到该地址时，执行<code>hook_func</code>中的内容，返回后继续在<code>hook_addr+skip_length</code>的地方继续执行（若<code>length=0</code>则不会触发<code>hook</code>）。该方法适用于函数不需要参数，也不考虑函数返回值的时候，当你要处理的函数包含对参数的操作，并且需要处理返回值，此时采用方法二</p><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token decorator annotation punctuation">@project<span class="token punctuation">.</span>hook</span><span class="token punctuation">(</span>hook_addr<span class="token punctuation">,</span> length<span class="token operator">=</span>instruction_length_to_skip<span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">hook_func</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># do somethings</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></div></li><li><p>二是<code>hook_symbol</code>：通过继承<code>angr.SimProcedure</code>，并重写<code>run</code>方法，可以实现对一个原始函数的完全模拟，包括函数的参数和返回值，下面演示了一个对原始函数的<code>hook</code>过程</p><div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># 原始函数</span>
+<span class="token builtin">int</span> add_if_positive<span class="token punctuation">(</span><span class="token builtin">int</span> a<span class="token punctuation">,</span> <span class="token builtin">int</span> b<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>a <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">&amp;</span><span class="token operator">&amp;</span> b <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
+    <span class="token keyword">else</span> <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment"># hook</span>
+<span class="token keyword">class</span> <span class="token class-name">ReplacementAddIfPositive</span><span class="token punctuation">(</span>angr<span class="token punctuation">.</span>SimProcedure<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">run</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> a<span class="token punctuation">,</span> b<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> a <span class="token operator">>=</span> <span class="token number">0</span> <span class="token keyword">and</span> b <span class="token operator">>=</span><span class="token number">0</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> a <span class="token operator">+</span> b
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token number">0</span>
+func_name <span class="token operator">=</span> <span class="token string">'add_if_positive'</span>
+project<span class="token punctuation">.</span>hook_symbol<span class="token punctuation">(</span>func_name<span class="token punctuation">,</span> ReplacementAddIfPositive<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div></li></ul>
+          </div>
 <p>除此之外，还需要思考一个问题，对于<code>hook</code>装饰的函数，我们如何提供函数的返回值（检查对比结果）？</p>
 <p>为此，我们先对函数本身如何处理返回值进行查看：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210506222154.png" srcset="/img/loading.gif" alt=""></p>
@@ -516,7 +535,217 @@ _BOOL4 __cdecl <span class="token function">check_equals_MRXJKZYRKMKENFZB</span>
 <span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
     main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
 <p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210506224557.png" srcset="/img/loading.gif" alt=""></p>
-<p><strong>未完待续</strong></p>
+<h2 id="10-angr-simprocedures"><a href="#10-angr-simprocedures" class="headerlink" title="10_angr_simprocedures"></a>10_angr_simprocedures</h2><div class="note note-success">
+            <p>本题依旧是对<code>hook</code>的使用，只不过上一题采用函数地址，本次采用函数名，相比函数地址更加方便</p>
+          </div>
+<p>看下源码：</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> __cdecl <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>envp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">signed</span> <span class="token keyword">int</span> i<span class="token punctuation">;</span> <span class="token comment">// [esp+20h] [ebp-28h]</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">17</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// [esp+2Bh] [ebp-1Dh]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> v6<span class="token punctuation">;</span> <span class="token comment">// [esp+3Ch] [ebp-Ch]</span>
+
+  v6 <span class="token operator">=</span> <span class="token function">__readgsdword</span><span class="token punctuation">(</span><span class="token number">0x14u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">memcpy</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>password<span class="token punctuation">,</span> <span class="token string">"MRXJKZYRKMKENFZB"</span><span class="token punctuation">,</span> <span class="token number">0x10u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">memset</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0x11u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Enter the password: "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%16s"</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">15</span><span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
+    s<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">complex_function</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">18</span> <span class="token operator">-</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">check_equals_MRXJKZYRKMKENFZB</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Good Job."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">else</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Try again."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+
+_BOOL4 __cdecl <span class="token string">''</span>check_equals_MRXJKZYRKMKENFZB<span class="token string">''</span><span class="token punctuation">(</span><span class="token keyword">int</span> a1<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> a2<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> v3<span class="token punctuation">;</span> <span class="token comment">// [esp+8h] [ebp-8h]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> i<span class="token punctuation">;</span> <span class="token comment">// [esp+Ch] [ebp-4h]</span>
+
+  v3 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> a2<span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">*</span><span class="token punctuation">(</span>_BYTE <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>i <span class="token operator">+</span> a1<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">*</span><span class="token punctuation">(</span>_BYTE <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>i <span class="token operator">+</span> <span class="token number">134529096</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+      <span class="token operator">++</span>v3<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> v3 <span class="token operator">==</span> a2<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>程序与上一题一样，本题需要用到<code>angr.SimProcedure</code>来替代二进制文件中指定函数的部分，说白了就是自己写一个函数替代原有的函数，很明显我们针对的是<code>check_equals_MRXJKZYRKMKENFZB()</code>。</p>
+<div class="note note-info">
+            <p><code>angr.SimProcedure</code>实现了用<code>python</code>编写替代原有函数的功能，通过继承<code>SimProcedure</code>，重写<code>run(self, *args)</code>方法，传入的参数(BV类型)和原有函数的参数对应，并按照<code>pythonic</code>的方式返回，用以提供给<code>angr</code>像原来函数一样处理。</p>
+          </div>
+<p>下图展示了这一思想：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210510172435.png" srcset="/img/loading.gif" alt=""></p>
+<p>前面09题说了，我们有两种<code>hook</code>方式，这里因为我们要处理参数和返回值，因此采用继承<code>angr.SimProcedure</code>的方式。</p>
+<p>下面是题解，我会在必要的地方添加注释，帮助理解：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> angr
+<span class="token keyword">import</span> claripy
+<span class="token keyword">import</span> sys
+
+
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    path_to_binary <span class="token operator">=</span> <span class="token string">'10_angr_simprocedures'</span>
+    project <span class="token operator">=</span> angr<span class="token punctuation">.</span>Project<span class="token punctuation">(</span>path_to_binary<span class="token punctuation">)</span>
+
+    initial_state <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>entry_state<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># 通过继承angr.SimProcedure实现对模拟函数的创建</span>
+    <span class="token keyword">class</span> <span class="token class-name">ReplacementCheckEquals</span><span class="token punctuation">(</span>angr<span class="token punctuation">.</span>SimProcedure<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># 重写run方法，self之后的参数与原始函数是对应的</span>
+        <span class="token keyword">def</span> <span class="token function">run</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> to_check<span class="token punctuation">,</span> length<span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token comment"># 对比原是函数，我们知道第一个参数是字符串的起始地址，第二个是字符串长度</span>
+            user_input_buffer_address <span class="token operator">=</span> to_check
+            user_input_buffer_length <span class="token operator">=</span> length
+
+            <span class="token comment"># 利用memory.load方法，从已知内存地址中读取指定长度的内容</span>
+            user_input_string <span class="token operator">=</span> self<span class="token punctuation">.</span>state<span class="token punctuation">.</span>memory<span class="token punctuation">.</span>load<span class="token punctuation">(</span>
+                user_input_buffer_address<span class="token punctuation">,</span>
+                user_input_buffer_length
+            <span class="token punctuation">)</span>
+
+            check_against_string <span class="token operator">=</span> <span class="token string">'MRXJKZYRKMKENFZB'</span>
+
+            <span class="token comment"># 这部分是我们比较过程，和前面一题是一样的，利用claripy.If，第一个参数是布尔判断条件，为真返回第二个参数，</span>
+            <span class="token comment"># 为假返回第三个参数，参数返回值应该是bitvector常量</span>
+            <span class="token keyword">return</span> claripy<span class="token punctuation">.</span>If<span class="token punctuation">(</span>
+                user_input_string <span class="token operator">==</span> check_against_string<span class="token punctuation">,</span>
+                claripy<span class="token punctuation">.</span>BVV<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">32</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                claripy<span class="token punctuation">.</span>BVV<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">32</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">)</span>
+
+    <span class="token comment"># 调用hook_symbol前，确定需要hook的函数名称，因为hook_symbol是基于函数名进行API调用的</span>
+    check_equals_symbol <span class="token operator">=</span> <span class="token string">'check_equals_MRXJKZYRKMKENFZB'</span> <span class="token comment"># :string</span>
+    project<span class="token punctuation">.</span>hook_symbol<span class="token punctuation">(</span>check_equals_symbol<span class="token punctuation">,</span> ReplacementCheckEquals<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># 后面的和前一题一样</span>
+    simulation <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>simgr<span class="token punctuation">(</span>initial_state<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">is_successful</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        stdout_output <span class="token operator">=</span> state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span> <span class="token keyword">if</span> <span class="token string">'Good Job.'</span> <span class="token keyword">in</span> stdout_output<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">False</span>
+
+    <span class="token keyword">def</span> <span class="token function">should_abort</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        stdout_output <span class="token operator">=</span> state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span> <span class="token keyword">if</span> <span class="token string">'Try again.'</span> <span class="token keyword">in</span> stdout_output<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">False</span>
+
+    simulation<span class="token punctuation">.</span>explore<span class="token punctuation">(</span>find<span class="token operator">=</span>is_successful<span class="token punctuation">,</span> avoid<span class="token operator">=</span>should_abort<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">:</span>
+        solution_state <span class="token operator">=</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+        solution <span class="token operator">=</span> solution_state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdin<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'[+] Success, flag is &#123;&#125;'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>solution<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'Could not find the solution'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210510193123.png" srcset="/img/loading.gif" alt=""></p>
+<h2 id="11-angr-sim-scanf"><a href="#11-angr-sim-scanf" class="headerlink" title="11_angr_sim_scanf"></a>11_angr_sim_scanf</h2><div class="note note-success">
+            <p>本题学习<code>hook scanf</code>函数，之前一直是在<code>scanf</code>之后对输入的结果做符号化，本次直接模拟<code>scanf</code>的执行</p>
+          </div>
+<p>老规矩，源码走一波：</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">int</span> __cdecl <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>envp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  _BOOL4 v3<span class="token punctuation">;</span> <span class="token comment">// eax</span>
+  <span class="token keyword">signed</span> <span class="token keyword">int</span> i<span class="token punctuation">;</span> <span class="token comment">// [esp+20h] [ebp-28h]</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// [esp+28h] [ebp-20h]</span>
+  <span class="token keyword">int</span> v7<span class="token punctuation">;</span> <span class="token comment">// [esp+2Ch] [ebp-1Ch]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> v8<span class="token punctuation">;</span> <span class="token comment">// [esp+3Ch] [ebp-Ch]</span>
+
+  v8 <span class="token operator">=</span> <span class="token function">__readgsdword</span><span class="token punctuation">(</span><span class="token number">0x14u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">memset</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0x14u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token operator">*</span><span class="token punctuation">(</span>_DWORD <span class="token operator">*</span><span class="token punctuation">)</span>s <span class="token operator">=</span> <span class="token string">'ZREX'</span><span class="token punctuation">;</span>
+  v7 <span class="token operator">=</span> <span class="token string">'BNTZ'</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">7</span><span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
+    s<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">complex_function</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Enter the password: "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%u %u"</span><span class="token punctuation">,</span> buffer0<span class="token punctuation">,</span> buffer1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  v3 <span class="token operator">=</span> <span class="token operator">!</span><span class="token function">strncmp</span><span class="token punctuation">(</span>buffer0<span class="token punctuation">,</span> s<span class="token punctuation">,</span> <span class="token number">4u</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token function">strncmp</span><span class="token punctuation">(</span>buffer1<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>v7<span class="token punctuation">,</span> <span class="token number">4u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> v3 <span class="token punctuation">)</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Good Job."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">else</span>
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Try again."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>程序就不解释了，因为本题是要模拟<code>scanf</code>，依照上题对函数模拟的思路：</p>
+<ol>
+<li>首先，我们先将模拟的部分摸清楚，对于<code>scanf</code>，首先第一个传入的参数是格式化字符串<code>%u %u</code>(函数调用的时候也是先将格式化字符串压栈)，然后依次传入<code>buffer0,buffer1</code></li>
+<li><p>接下来我们要模拟输入两个变量到<code>buffer</code>中，本质上就是写入两个符号变量到内存里，因此，在模拟函数中，创建<code>claripy.BVS(&#39;scanf&#39;, 32)</code>对象，并利用<code>state.memory.store()</code>方法将变量写入内存</p>
+</li>
+<li><p>由于定义的符号变量位于<code>run()</code>方法内部，使得在<code>simulation.found</code>之后无法进行约束求解，因此还需要将这个两个局部变量放到全局中，解决方法可以是改用全局变量，然后在<code>run</code>内部使用<code>global</code>关键字，或者采用<code>state.globals[key]=value</code>的方式存储。</p>
+</li>
+</ol>
+<p>下面是题解，我会在必要的地方添加注释，帮助理解：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">import</span> angr
+<span class="token keyword">import</span> claripy
+<span class="token keyword">import</span> sys
+
+
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    path_to_binary <span class="token operator">=</span> <span class="token string">'11_angr_sim_scanf'</span>
+    project <span class="token operator">=</span> angr<span class="token punctuation">.</span>Project<span class="token punctuation">(</span>path_to_binary<span class="token punctuation">,</span> auto_load_libs<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span>
+
+    initial_state <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>entry_state<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">class</span> <span class="token class-name">ReplacementScanf</span><span class="token punctuation">(</span>angr<span class="token punctuation">.</span>SimProcedure<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token comment"># run现在模拟scanf，第一个参数是格式化字符串，接着传入两个buffer地址</span>
+        <span class="token keyword">def</span> <span class="token function">run</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> format_string<span class="token punctuation">,</span> scanf0_address<span class="token punctuation">,</span> scanf1_address<span class="token punctuation">)</span><span class="token punctuation">:</span>
+
+            <span class="token comment"># 定义两个符号变量，用于写入buffer</span>
+            scanf0 <span class="token operator">=</span> claripy<span class="token punctuation">.</span>BVS<span class="token punctuation">(</span><span class="token string">'scanf0'</span><span class="token punctuation">,</span> <span class="token number">32</span><span class="token punctuation">)</span>
+            scanf1 <span class="token operator">=</span> claripy<span class="token punctuation">.</span>BVS<span class="token punctuation">(</span><span class="token string">'scanf1'</span><span class="token punctuation">,</span> <span class="token number">32</span><span class="token punctuation">)</span>
+
+            <span class="token comment"># 写入内存，最后一个参数指定字节序</span>
+            self<span class="token punctuation">.</span>state<span class="token punctuation">.</span>memory<span class="token punctuation">.</span>store<span class="token punctuation">(</span>scanf0_address<span class="token punctuation">,</span> scanf0<span class="token punctuation">,</span> endness<span class="token operator">=</span>project<span class="token punctuation">.</span>arch<span class="token punctuation">.</span>memory_endness<span class="token punctuation">)</span>
+            self<span class="token punctuation">.</span>state<span class="token punctuation">.</span>memory<span class="token punctuation">.</span>store<span class="token punctuation">(</span>scanf1_address<span class="token punctuation">,</span> scanf1<span class="token punctuation">,</span> endness<span class="token operator">=</span>project<span class="token punctuation">.</span>arch<span class="token punctuation">.</span>memory_endness<span class="token punctuation">)</span>
+
+            <span class="token comment"># 保存变量到全局，方便后续约束求解</span>
+            self<span class="token punctuation">.</span>state<span class="token punctuation">.</span><span class="token builtin">globals</span><span class="token punctuation">[</span><span class="token string">'solution0'</span><span class="token punctuation">]</span> <span class="token operator">=</span> scanf0
+            self<span class="token punctuation">.</span>state<span class="token punctuation">.</span><span class="token builtin">globals</span><span class="token punctuation">[</span><span class="token string">'solution1'</span><span class="token punctuation">]</span> <span class="token operator">=</span> scanf1
+
+    <span class="token comment"># scanf的函数名称，用ida反编译得到的</span>
+    scanf_symbol <span class="token operator">=</span> <span class="token string">'__isoc99_scanf'</span>
+    project<span class="token punctuation">.</span>hook_symbol<span class="token punctuation">(</span>scanf_symbol<span class="token punctuation">,</span> ReplacementScanf<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    simulation <span class="token operator">=</span> project<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>simgr<span class="token punctuation">(</span>initial_state<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">is_successful</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        stdout_output <span class="token operator">=</span> state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span> <span class="token keyword">if</span> <span class="token string">'Good Job.'</span> <span class="token keyword">in</span> stdout_output<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">False</span>
+
+    <span class="token keyword">def</span> <span class="token function">should_abort</span><span class="token punctuation">(</span>state<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        stdout_output <span class="token operator">=</span> state<span class="token punctuation">.</span>posix<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>stdout<span class="token punctuation">.</span>fileno<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span> <span class="token keyword">if</span> <span class="token string">'Try again.'</span> <span class="token keyword">in</span> stdout_output<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span> <span class="token keyword">else</span> <span class="token boolean">False</span>
+
+    simulation<span class="token punctuation">.</span>explore<span class="token punctuation">(</span>find<span class="token operator">=</span>is_successful<span class="token punctuation">,</span> avoid<span class="token operator">=</span>should_abort<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">:</span>
+        solution_state <span class="token operator">=</span> simulation<span class="token punctuation">.</span>found<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+
+        <span class="token comment"># 对符号变量进行约束求解</span>
+        stored_solutions0 <span class="token operator">=</span> solution_state<span class="token punctuation">.</span><span class="token builtin">globals</span><span class="token punctuation">[</span><span class="token string">'solution0'</span><span class="token punctuation">]</span>
+        stored_solutions1 <span class="token operator">=</span> solution_state<span class="token punctuation">.</span><span class="token builtin">globals</span><span class="token punctuation">[</span><span class="token string">'solution1'</span><span class="token punctuation">]</span>
+        scanf0_solution <span class="token operator">=</span> solution_state<span class="token punctuation">.</span>solver<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span>stored_solutions0<span class="token punctuation">)</span>
+        scanf1_solution <span class="token operator">=</span> solution_state<span class="token punctuation">.</span>solver<span class="token punctuation">.</span><span class="token builtin">eval</span><span class="token punctuation">(</span>stored_solutions1<span class="token punctuation">)</span>
+
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'[+] Success, flag is &#123;&#125; &#123;&#125;'</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>scanf0_solution<span class="token punctuation">,</span> scanf1_solution<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> Exception<span class="token punctuation">(</span><span class="token string">'Could not find the solution'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/image-20210510213720026.png" srcset="/img/loading.gif" alt="image-20210510213720026"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文<strong>提高篇</strong>主要核心在于对于约束条件和<code>hook</code>的学习，通过约束条件能够解决一般的路径爆炸问题（如存在循环），而<code>hook</code>能够对于程序执行到指定的代码部分，接管操作，跳过会产生路径爆炸的代码或模拟我们不希望执行的代码（达到同样的目的）。这里分别对做完的4道题目总结一下：</p>
+<ul>
+<li><strong>08_angr_constraints</strong>：第一个出现循环的代码，也是产生路径爆炸的地方，为了避免，我们<code>find</code>指定位置，并通过对比此时内存中的字符串和目标串，从而无需执行循环也能达到同样的效果。</li>
+<li><strong>09_angr_hooks</strong>：在上一题的基础上利用了<code>angr</code>的<code>hook</code>，接管指定位置的代码程序，这使得程序能够跳过某一部分代码的执行，但此时是依据目标代码的地址和要跳过的字节数确定的。</li>
+<li><strong>10_angr_simprocedures</strong>：跟上题一样，只不过此处是利用函数名进行<code>hook</code>，扩展性和可读性都得到了提高，也是认识<code>SimProcedures</code>的一个过程</li>
+<li><strong>11_angr_sim_scanf</strong>：对<code>scanf</code>函数进行了模拟，可以和以前操作<code>scanf</code>之后修改寄存器，修改内存，修改栈的几题做对比，该方法通用性更高。</li>
+</ul>
 
             </div>
             <hr>
