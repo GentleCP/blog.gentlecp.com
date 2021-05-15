@@ -22,7 +22,7 @@
   <meta name="author" content="GentleCP">
   <meta name="keywords" content="">
   
-  <title>如何发布自己的python包到PYPI？给自己编写工具代码 - 求索</title>
+  <title>【angr_ctf】二进制分析工具angr使用与练习-Part III（进阶篇） - 求索</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -192,7 +192,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="如何发布自己的python包到PYPI？给自己编写工具代码">
+            <span class="h2" id="subtitle" title="【angr_ctf】二进制分析工具angr使用与练习-Part III（进阶篇）">
               
             </span>
 
@@ -207,8 +207,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-03-13 10:21" pubdate>
-        2021年3月13日 上午
+      <time datetime="2021-05-11 19:58" pubdate>
+        2021年5月11日 晚上
       </time>
     </span>
   
@@ -219,7 +219,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      891 字
+      86 字
     </span>
   
 
@@ -229,7 +229,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      9
+      1
        分钟
     </span>
   
@@ -267,53 +267,11 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">如何发布自己的python包到PYPI？给自己编写工具代码</h1>
+            <h1 style="display: none">【angr_ctf】二进制分析工具angr使用与练习-Part III（进阶篇）</h1>
             
             <div class="markdown-body">
-              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在我编写某一个项目的时候，时常会发现我又用到了之前某个项目中写过的功能，这个时候只能找到以前的项目，将代码copy到新项目中调用。这是一种非常low的做法，一方面，查找以前的代码，费时费力；另一方面，一看就是初学者喜欢干的，作为一个码龄也算有几年的人，还一直满足于以前这种做法，是没有办法进步的。<br><img src="https://img-blog.csdnimg.cn/20200419164648649.png#pic_center =110x100" srcset="/img/loading.gif" alt=""><br>网上其实也有许多类似的教程，但总觉得不够简练、友好，很多地方没有解释清楚，因此干脆自己写一个，方便自己也方便他人。</p>
-<h2 id="基础准备"><a href="#基础准备" class="headerlink" title="基础准备"></a>基础准备</h2><p>完成项目创立、工具代码编写、必要文件添加的操作</p>
-<h3 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h3><p>这部分应该都驾轻就熟，可以直接创建一个目录或者用pycharm创建一个新项目，并在新项目下创建一个同名目录，例如我创建一个<code>cptools</code>项目，如下图所示：<br><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cuZ2VudGxlY3AuY29tL3dwLWNvbnRlbnQvdXBsb2Fkcy81ZTk5NWQ4N2QwMjEyLnBuZw?x-oss-process=image/format,png" srcset="/img/loading.gif" alt=""></p>
-<ul>
-<li><strong>为什么要在项目下新建目录而不是直接将代码放在总目录下？</strong><blockquote>
-<p>总目录下除了存放代码外，一般还会存放README，LICENSE以及自动创建的build目录等，因此用这种方式将代码隔离开</p>
-</blockquote>
-</li>
-</ul>
-<h3 id="编写工具代码"><a href="#编写工具代码" class="headerlink" title="编写工具代码"></a>编写工具代码</h3><p>这时候就可以在项目中编写你的个人代码了，通常来说我们代码主要编写为类和函数两种，方便调用。我简单地创建了一个类和函数，放到一个<code>.py</code>文件中，如下图：<br><img src="https://img-blog.csdnimg.cn/20200419164731520.png#pic_center =400x200" srcset="/img/loading.gif" alt=""></p>
-<p>同时为了说明这是一个模块，需要添加一个<code>__init__.py</code>文件，我们经常看到一个包直接提供函数的形式，例如<code>requests.get()</code>，而不是<code>requests.utils.get()</code>，是因为在<code>__init__.py</code>中将该目录下所有文件的方法做了导入。如下图所示，我们将<code>hello_cp.py</code>的所有内容导入，这样我们就可以直接用<code>cptools.hello()</code>去调用<code>hello</code>函数了，如下图：<br><img src="https://img-blog.csdnimg.cn/20200419164749953.png#pic_center =400x200" srcset="/img/loading.gif" alt=""></p>
-<blockquote>
-<p>name属性是指定包名，和目录一样即可</p>
-</blockquote>
-<h3 id="setup-py"><a href="#setup-py" class="headerlink" title="setup.py"></a>setup.py</h3><p>这个文件是用于告诉setuptools我们项目的版本号等信息的，创建在项目总目录下即可，如下所示：</p>
-<p><img src="https://img-blog.csdnimg.cn/20200419164805629.png#pic_center =400x300" srcset="/img/loading.gif" alt=""></p>
-<h3 id="LICENSE"><a href="#LICENSE" class="headerlink" title="LICENSE"></a>LICENSE</h3><p>LICENSE在<code>github</code>上创建之初可以选择，如下图：<br><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cuZ2VudGxlY3AuY29tL3dwLWNvbnRlbnQvdXBsb2Fkcy81ZjI1MDBkZTUwOTI5LnBuZw#pic_center =618x590" srcset="/img/loading.gif" alt=""><br>不同的开源协议包含不同的开源要求，具体可自己查询，一般我建议采用<code>GNU v3.0</code></p>
-<h3 id="README-md"><a href="#README-md" class="headerlink" title="README.md"></a>README.md</h3><p>这部分是对整个项目的描述，可以编写对项目的介绍，这个时候你的目录应该和我下图显示的类似<br><img src="https://img-blog.csdnimg.cn/20200419164837863.png#pic_center =400x150" srcset="/img/loading.gif" alt=""></p>
-<h2 id="打包发布到PYPI"><a href="#打包发布到PYPI" class="headerlink" title="打包发布到PYPI"></a>打包发布到PYPI</h2><p>到前面为止，必须的文件我们已经创建完毕，下面就是如何打包和发布的过程。</p>
-<h3 id="打包项目"><a href="#打包项目" class="headerlink" title="打包项目"></a>打包项目</h3><p>在总目录下执行如下代码<br><div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">python setup.py sdist<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div><br>这时候就会生成一个dist目录，如下所示：<br><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cuZ2VudGxlY3AuY29tL3dwLWNvbnRlbnQvdXBsb2Fkcy81ZTk5NjdhMDI3ZDBmLnBuZw#pic_center =400x200" srcset="/img/loading.gif" alt="">  </p>
-<h3 id="发布到PYPI"><a href="#发布到PYPI" class="headerlink" title="发布到PYPI"></a>发布到PYPI</h3><ul>
-<li><p>先点击<a target="_blank" rel="noopener" href="https://pypi.org/account/register/">这里</a>注册一个pypi账号</p>
-<blockquote>
-<p>需要验证邮箱</p>
-</blockquote>
-</li>
-<li><p>用<code>twine</code>模块上传到pypi  </p>
-  <div class="code-wrapper"><pre class="line-numbers language-none"><code class="language-none">twine upload dist&#x2F;*<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></div>
-<p>  <img src="https://img-blog.csdnimg.cn/20200419164925896.png#pic_center =400x80" srcset="/img/loading.gif" alt=""></p>
-<blockquote>
-<p>如果没有twine，用<code>pip install twine</code></p>
-</blockquote>
-</li>
-</ul>
-<h3 id="查看我们的项目"><a href="#查看我们的项目" class="headerlink" title="查看我们的项目"></a>查看我们的项目</h3><p>到<a target="_blank" rel="noopener" href="https://pypi.org/search/?q=cptools">pypi</a>上搜索<code>cptools</code><br><img src="https://img-blog.csdnimg.cn/20200419164946313.png#pic_center =400x200" srcset="/img/loading.gif" alt=""></p>
-<blockquote>
-<p>这时候说明我们可以用<code>pip install cptools</code>安装我们的模块了</p>
-</blockquote>
-<h2 id="测试模块使用"><a href="#测试模块使用" class="headerlink" title="测试模块使用"></a>测试模块使用</h2><ul>
-<li><code>pip install cptools</code><br>  <img src="https://img-blog.csdnimg.cn/20200419165008503.png#pic_center =400x200" srcset="/img/loading.gif" alt=""></li>
-<li>调用函数<br>  <img src="https://img-blog.csdnimg.cn/20200419165019581.png#pic_center =400x100" srcset="/img/loading.gif" alt=""></li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，一个完整的python包编写发布过程就结束了，以后有新的内容发布了依然是用相同的方法更新到pypi使用即可，不过记得更新你的版本号和github内容哦～</p>
-
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是<code>angr_ctf</code>练习的最后一篇，这次会完成剩下的6道题目，结束<code>angr</code>的练习，后续可能会发布<code>angr</code>在实际软件符号执行中的应用文章。本文为<strong>进阶篇</strong>，通过这次练习，了解<code>angr</code>更多的使用技巧，废话不多说，马上开始。</p>
+<h2 id="12-angr-veritersting"><a href="#12-angr-veritersting" class="headerlink" title="12_angr_veritersting"></a>12_angr_veritersting</h2>
             </div>
             <hr>
             <div>
@@ -322,7 +280,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/python/">python</a>
+                      <a class="hover-with-bg" href="/categories/security/">security</a>
                     
                   </div>
                 
@@ -330,9 +288,11 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/python/">python</a>
+                      <a class="hover-with-bg" href="/tags/binary/">binary</a>
                     
-                      <a class="hover-with-bg" href="/tags/pypi/">pypi</a>
+                      <a class="hover-with-bg" href="/tags/symbolic-execution/">symbolic_execution</a>
+                    
+                      <a class="hover-with-bg" href="/tags/static-analysis/">static_analysis</a>
                     
                   </div>
                 
@@ -349,18 +309,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/article/65005.html">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">《Python绘图利器》：Matplotlib使用教程</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/article/53311.html">
-                        <span class="hidden-mobile">py2neo 快速上手</span>
+                      <a href="/article/3571.html">
+                        <span class="hidden-mobile">【angr_ctf】二进制分析工具angr使用与练习-Part II（提高篇）</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
