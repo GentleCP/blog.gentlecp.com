@@ -6,7 +6,7 @@
   <link href="https://blog.gentlecp.com/atom.xml" rel="self"/>
   
   <link href="https://blog.gentlecp.com/"/>
-  <updated>2021-05-15T01:26:01.500Z</updated>
+  <updated>2021-05-21T12:54:10.073Z</updated>
   <id>https://blog.gentlecp.com/</id>
   
   <author>
@@ -17,11 +17,38 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>VxWorks 固件分析初体验</title>
+    <link href="https://blog.gentlecp.com/article/41651.html"/>
+    <id>https://blog.gentlecp.com/article/41651.html</id>
+    <published>2021-05-21T08:55:40.000Z</published>
+    <updated>2021-05-21T12:54:10.073Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Preface&quot;&gt;&lt;a href=&quot;#Preface&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="security" scheme="https://blog.gentlecp.com/categories/security/"/>
+    
+    
+    <category term="vxworks" scheme="https://blog.gentlecp.com/tags/vxworks/"/>
+    
+    <category term="firmware" scheme="https://blog.gentlecp.com/tags/firmware/"/>
+    
+  </entry>
+  
+  <entry>
     <title>【angr_ctf】二进制分析工具angr使用与练习-Part III（进阶篇）</title>
     <link href="https://blog.gentlecp.com/article/26999.html"/>
     <id>https://blog.gentlecp.com/article/26999.html</id>
     <published>2021-05-11T11:58:24.000Z</published>
-    <updated>2021-05-15T01:26:01.500Z</updated>
+    <updated>2021-05-15T08:28:50.361Z</updated>
     
     
       
@@ -536,33 +563,6 @@
     <category term="python" scheme="https://blog.gentlecp.com/tags/python/"/>
     
     <category term="py2neo" scheme="https://blog.gentlecp.com/tags/py2neo/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>scrapy 快速上手</title>
-    <link href="https://blog.gentlecp.com/article/52452.html"/>
-    <id>https://blog.gentlecp.com/article/52452.html</id>
-    <published>2021-03-06T10:16:56.000Z</published>
-    <updated>2021-04-29T15:15:53.000Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;Scrapy快速上手&quot;&gt;&lt;a href=&quot;#Scrapy快速上手&quot; class=&quot;headerlink&quot; title=&quot;Scrapy快速上手&quot;&gt;&lt;/a&gt;Scrapy快速上手&lt;/h1&gt;&lt;h2 id=&quot;scrapy简介&quot;&gt;&lt;a href=&quot;#scrapy简介&quot;</summary>
-        
-      
-    
-    
-    
-    <category term="python" scheme="https://blog.gentlecp.com/categories/python/"/>
-    
-    
-    <category term="python" scheme="https://blog.gentlecp.com/tags/python/"/>
-    
-    <category term="scrapy" scheme="https://blog.gentlecp.com/tags/scrapy/"/>
     
   </entry>
   
