@@ -6,7 +6,7 @@
   <link href="https://blog.gentlecp.com/atom.xml" rel="self"/>
   
   <link href="https://blog.gentlecp.com/"/>
-  <updated>2021-05-23T00:49:17.395Z</updated>
+  <updated>2021-06-19T02:23:53.680Z</updated>
   <id>https://blog.gentlecp.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>【idapython】逆向分析脚本实践</title>
+    <link href="https://blog.gentlecp.com/article/11099.html"/>
+    <id>https://blog.gentlecp.com/article/11099.html</id>
+    <published>2021-06-18T12:07:14.000Z</published>
+    <updated>2021-06-19T02:23:53.680Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Preface&quot;&gt;&lt;a href=&quot;#Preface&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="security" scheme="https://blog.gentlecp.com/categories/security/"/>
+    
+    
+    <category term="ida" scheme="https://blog.gentlecp.com/tags/ida/"/>
+    
+    <category term="reverse" scheme="https://blog.gentlecp.com/tags/reverse/"/>
+    
+  </entry>
   
   <entry>
     <title>VxWorks 固件分析初体验</title>
@@ -536,33 +563,6 @@
     <category term="python" scheme="https://blog.gentlecp.com/tags/python/"/>
     
     <category term="pypi" scheme="https://blog.gentlecp.com/tags/pypi/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>py2neo 快速上手</title>
-    <link href="https://blog.gentlecp.com/article/53311.html"/>
-    <id>https://blog.gentlecp.com/article/53311.html</id>
-    <published>2021-03-06T11:00:42.000Z</published>
-    <updated>2021-03-11T06:03:15.189Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;py2neo-快速上手&quot;&gt;&lt;a href=&quot;#py2neo-快速上手&quot; class=&quot;headerlink&quot; title=&quot;py2neo 快速上手&quot;&gt;&lt;/a&gt;py2neo 快速上手&lt;/h1&gt;&lt;h2 id=&quot;py2neo简介&quot;&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    <category term="python" scheme="https://blog.gentlecp.com/categories/python/"/>
-    
-    
-    <category term="python" scheme="https://blog.gentlecp.com/tags/python/"/>
-    
-    <category term="py2neo" scheme="https://blog.gentlecp.com/tags/py2neo/"/>
     
   </entry>
   
