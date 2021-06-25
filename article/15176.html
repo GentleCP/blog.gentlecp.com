@@ -533,7 +533,7 @@ end<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
 <li>避免本应认定相似的没分到一个桶中：对应就是减小<code>False Negative</code>，提高准确率，就应该让阈值（即曲线最陡处）较小（如小于我们心中期望的$s_{min}$），这样所有我们认为应该相似的都会被分到一个桶中，但这显然会带来较大的计算量</li>
 </ul>
 <p>上述的选择决定于阈值$t=(\frac{1}{b})^\frac{1}{r}$的取值，因此我们可以通过调整不同的<code>b,r</code>来达到相应的目的。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文是我看了许多讲述<code>LSH</code>的文章后，加入自己的理解撰写的一篇笔记，其中难免纰漏、错误之处，在阅读的过程中，我也发现网上的文章参差不齐，有的存在断章取义，使得对<code>LSH, MinHash</code>的理解存在偏差，最后是看了斯坦福大学的<a href="download/03-lsh.pdf">ppt</a>，视频，并结合各家文章，才对这两者有了基本的理解，相应参考资料都放在了后面，感兴趣的可以自己阅读。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文是我看了许多讲述<code>LSH</code>的文章后，加入自己的理解撰写的一篇笔记，其中难免纰漏、错误之处，在阅读的过程中，我也发现网上的文章参差不齐，有的存在断章取义，使得对<code>LSH, MinHash</code>的理解存在偏差，最后是看了斯坦福大学的<a href="/download/03-lsh.pdf">ppt</a>，视频，并结合各家文章，才对这两者有了基本的理解，相应参考资料都放在了后面，感兴趣的可以自己阅读。</p>
 <section class="footnotes"><h2>参考</h2><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/535c537a5766">2018-11-15-MinHash原理 - 简书 (jianshu.com)</a>
 <a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=bQAYY8INBxg&amp;ab_channel=EITDigital">(114) Locality Sensitive Hashing Part 1, Jeffrey D Ullman - YouTube</a>
 <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/108181478">LSH算法 - 知乎 (zhihu.com)</a>
