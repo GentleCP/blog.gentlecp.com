@@ -1,0 +1,778 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210416092821.png">
+  <link rel="icon" href="https://gitee.com/gentlecp/ImgUrl/raw/master/20210416092821.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  
+    <meta name="description" content="记录我的学习和生活">
+  
+  <meta name="author" content="GentleCP">
+  <meta name="keywords" content="">
+  
+  <title>【IDAPython CTree】反编译代码操作练习 - 求索</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      
+        
+          
+        
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/themes/prism.min.css" />
+      
+      
+        <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/plugins/line-numbers/prism-line-numbers.min.css" />
+      
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.gentlecp.com","root":"/","version":"1.8.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":"e327374203a31813ad9ef3899d6f3eb5","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="求索" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>求索|CP</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210430161149.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="【IDAPython CTree】反编译代码操作练习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-author" aria-hidden="true"></i>
+      GentleCP
+    </span>
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-07-21 16:30" pubdate>
+        2021年7月21日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【IDAPython CTree】反编译代码操作练习</h1>
+            
+            <div class="markdown-body">
+              <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>IDA Pro</code>可对二进制的汇编代码进行反编译，得到C伪代码，帮助安全人员进行分析，反编译的结果是一棵抽象语法树(Abstract Syntax Tree, AST)。同时，<code>IDAPython</code> 提供了相应的接口，让我们能够直接通过API，完成对反编译代码的分析操作。</p>
+<p>由于网上相关的资料稀少，在观察比较了官方和一些现有博客后，本文主要通过一个案例，两种不同需求的例子来说明对这些接口的使用。</p>
+<h2 id="实验前置条件"><a href="#实验前置条件" class="headerlink" title="实验前置条件"></a>实验前置条件</h2><p>这里我们采用一个简单的c语言代码<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="Hex-Rays Decompiler primer – Hex Rays
+">[1]</span></a></sup>，源代码如下：</p>
+<div class="code-wrapper"><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;string.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">func3</span><span class="token punctuation">(</span><span class="token keyword">int</span> n<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>s<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+  <span class="token keyword">int</span> b<span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">strcmp</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token string">"hello"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    b <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">strcmp</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token string">"hello1"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    b <span class="token operator">=</span> <span class="token number">200</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">strcmp</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token string">"hello2"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    b <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">strcmp</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token string">"hello3"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    b <span class="token operator">=</span> <span class="token number">300</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">strcmp</span><span class="token punctuation">(</span><span class="token string">"hello4"</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    b <span class="token operator">=</span> <span class="token number">400</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">strcmp</span><span class="token punctuation">(</span><span class="token string">"hello5"</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">&#123;</span>
+    b <span class="token operator">=</span> <span class="token number">500</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">else</span>
+  <span class="token punctuation">&#123;</span>
+    b <span class="token operator">=</span> <span class="token number">600</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> b <span class="token operator">+</span> n<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> res <span class="token operator">=</span> <span class="token function">func3</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token string">"hello"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> res<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>功能非常简单，经<code>gcc</code> 反编译得到二进制文件，并将该二进制文件拖入<code>IDA</code> ，结果如下：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210721164156.png" srcset="/img/loading.gif" style="zoom:67%;" /></p>
+<p>至此，实验前置工作完成。</p>
+<h2 id="需求一：修改反编译代码中所有赋值语句"><a href="#需求一：修改反编译代码中所有赋值语句" class="headerlink" title="需求一：修改反编译代码中所有赋值语句"></a>需求一：修改反编译代码中所有赋值语句</h2><p>根据需求可以简要获得思路：</p>
+<ol>
+<li>遍历表达式，找到所有的赋值语句：<code>idapython</code> 提供了一个 <code>ctree_visitor_t</code> 类，通过继承该类，并修改 <code>visit_expr</code> 可实现遍历所有表达式</li>
+<li>获取赋值语句的变量和立即数</li>
+<li>生成新的表达式替换原有表达式</li>
+</ol>
+<p>下面是实现的脚本代码，我在必要的地方添加了注释，帮助理解。</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#!/usr/bin/env python</span>
+<span class="token comment"># -*- coding: utf-8 -*-</span>
+<span class="token triple-quoted-string string">"""
+-----------------File Info-----------------------
+Name: ctree_test_script.py
+Description:
+Author: GentleCP
+Email: me@gentlecp.com
+Create Date: 7/21/2021 
+-----------------End-----------------------------
+"""</span>
+<span class="token keyword">import</span> idaapi
+<span class="token keyword">import</span> idc
+
+<span class="token keyword">class</span> <span class="token class-name">MyVisitor</span><span class="token punctuation">(</span>idaapi<span class="token punctuation">.</span>ctree_visitor_t<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> cfunc<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        idaapi<span class="token punctuation">.</span>ctree_visitor_t<span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>self<span class="token punctuation">,</span> idaapi<span class="token punctuation">.</span>CV_FAST<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>cfunc <span class="token operator">=</span> cfunc
+
+    <span class="token keyword">def</span> <span class="token function">is_strcmp_expr</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> cexpr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">'''
+        检验是否为strcmp表达式, 注意此处是先取反，其操作数才是strcmp
+        :param cexpr: cexpr_t
+        :return:
+        '''</span>
+        <span class="token keyword">if</span> cexpr<span class="token punctuation">.</span>op <span class="token operator">!=</span> idaapi<span class="token punctuation">.</span>cot_lnot<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token boolean">False</span>
+        strcmp_expr <span class="token operator">=</span> cexpr<span class="token punctuation">.</span>x
+        <span class="token keyword">if</span> strcmp_expr<span class="token punctuation">.</span>a<span class="token punctuation">.</span>size<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">2</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token boolean">False</span>
+        <span class="token keyword">if</span> idaapi<span class="token punctuation">.</span>get_func_name<span class="token punctuation">(</span>strcmp_expr<span class="token punctuation">.</span>x<span class="token punctuation">.</span>obj_ea<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token string">".strcmp"</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token boolean">False</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_expr</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> expr<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token string">"int"</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> expr<span class="token punctuation">.</span>op <span class="token operator">!=</span> idaapi<span class="token punctuation">.</span>cot_asg<span class="token punctuation">:</span>
+            <span class="token comment"># 不是赋值语句跳过</span>
+            <span class="token keyword">return</span> <span class="token number">0</span>
+        _x <span class="token operator">=</span> expr<span class="token punctuation">.</span>x  <span class="token comment"># x是第一个操作数</span>
+        _y <span class="token operator">=</span> expr<span class="token punctuation">.</span>y  <span class="token comment"># y是第二个操作数</span>
+        <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"find expr:&#123;&#125;,&#123;&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>_x<span class="token punctuation">.</span>opname<span class="token punctuation">,</span> _y<span class="token punctuation">.</span>opname<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token comment"># 判断是否满足变量和立即数的条件</span>
+        <span class="token keyword">if</span> _x<span class="token punctuation">.</span>op <span class="token operator">==</span> idaapi<span class="token punctuation">.</span>cot_var <span class="token keyword">and</span> _y<span class="token punctuation">.</span>op <span class="token operator">==</span> idaapi<span class="token punctuation">.</span>cot_num<span class="token punctuation">:</span>
+            <span class="token comment"># e.g. v3 = 100，</span>
+            num <span class="token operator">=</span> _y<span class="token punctuation">.</span>n<span class="token punctuation">.</span>value<span class="token punctuation">(</span>_y<span class="token punctuation">.</span><span class="token builtin">type</span><span class="token punctuation">)</span>  <span class="token comment"># 获取立即数的数值</span>
+            <span class="token comment"># 生成一个新表达式，idapython要想修改表达式，需要新建一个，并调用swap方法</span>
+            z <span class="token operator">=</span> idaapi<span class="token punctuation">.</span>cexpr_t<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            z<span class="token punctuation">.</span>swap<span class="token punctuation">(</span>_y<span class="token punctuation">)</span>
+            _y<span class="token punctuation">.</span>op <span class="token operator">=</span> idaapi<span class="token punctuation">.</span>cot_str  <span class="token comment"># 修改立即数为string</span>
+            _y<span class="token punctuation">.</span>string <span class="token operator">=</span> <span class="token string">'hello world'</span>  <span class="token comment"># 将所有立即数修改为hello world</span>
+        <span class="token keyword">return</span> <span class="token number">0</span>
+
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    func <span class="token operator">=</span> idaapi<span class="token punctuation">.</span>get_func<span class="token punctuation">(</span>idc<span class="token punctuation">.</span>here<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># 获取当前位置的函数</span>
+    cfunc <span class="token operator">=</span> idaapi<span class="token punctuation">.</span>decompile<span class="token punctuation">(</span>func<span class="token punctuation">.</span>start_ea<span class="token punctuation">)</span>  <span class="token comment"># 反编译函数</span>
+    my_visitor <span class="token operator">=</span> MyVisitor<span class="token punctuation">(</span>cfunc<span class="token punctuation">)</span>
+    my_visitor<span class="token punctuation">.</span>apply_to<span class="token punctuation">(</span>cfunc<span class="token punctuation">.</span>body<span class="token punctuation">,</span> <span class="token boolean">None</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>再看对应的反编译结果，发现成功完成了替换</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210721165215.png" srcset="/img/loading.gif" style="zoom: 67%;" /></p>
+<h2 id="需求二：找到常数参数为hello的strcmp表达式"><a href="#需求二：找到常数参数为hello的strcmp表达式" class="headerlink" title="需求二：找到常数参数为hello的strcmp表达式"></a>需求二：找到常数参数为hello的strcmp表达式</h2><p>该需求主要是练习对语句和表达式结合的搜索方式</p>
+<p>整理一下思路：</p>
+<ol>
+<li>找到所有的<code>if</code> 语句：这次我们需要遍历语句，采取修改<code>ctree_visitor_t</code> 的 <code>visit_insn</code> 方法</li>
+<li>判断其包含的条件表达式是否为 <code>!strcmp()</code> 类型</li>
+<li>判断其参数中是否有 <code>hello</code> 参数，若有，给出提示</li>
+</ol>
+<p>下面是实现的脚本代码，当找打我在必要的地方添加了注释，帮助理解：</p>
+<div class="code-wrapper"><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#!/usr/bin/env python</span>
+<span class="token comment"># -*- coding: utf-8 -*-</span>
+<span class="token triple-quoted-string string">"""
+-----------------File Info-----------------------
+Name: ctree_test_script.py
+Description:
+Author: GentleCP
+Email: me@gentlecp.com
+Create Date: 7/21/2021 
+-----------------End-----------------------------
+"""</span>
+<span class="token keyword">import</span> idaapi
+<span class="token keyword">import</span> idc
+<span class="token keyword">import</span> ida_bytes
+
+
+<span class="token keyword">class</span> <span class="token class-name">MyVisitor</span><span class="token punctuation">(</span>idaapi<span class="token punctuation">.</span>ctree_visitor_t<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> cfunc<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        idaapi<span class="token punctuation">.</span>ctree_visitor_t<span class="token punctuation">.</span>__init__<span class="token punctuation">(</span>self<span class="token punctuation">,</span> idaapi<span class="token punctuation">.</span>CV_FAST<span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>cfunc <span class="token operator">=</span> cfunc
+
+    <span class="token keyword">def</span> <span class="token function">is_strcmp_expr</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> cexpr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token triple-quoted-string string">'''
+        检验是否为strcmp表达式, 注意此处是先取反，其操作数才是strcmp
+        :param cexpr: cexpr_t
+        :return:
+        '''</span>
+        <span class="token keyword">if</span> cexpr<span class="token punctuation">.</span>op <span class="token operator">!=</span> idaapi<span class="token punctuation">.</span>cot_lnot<span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token boolean">False</span>
+        strcmp_expr <span class="token operator">=</span> cexpr<span class="token punctuation">.</span>x  <span class="token comment">#  !strcmp() -> strcmp()</span>
+        <span class="token keyword">if</span> strcmp_expr<span class="token punctuation">.</span>a<span class="token punctuation">.</span>size<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">2</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token boolean">False</span>
+        <span class="token keyword">if</span> idaapi<span class="token punctuation">.</span>get_func_name<span class="token punctuation">(</span>strcmp_expr<span class="token punctuation">.</span>x<span class="token punctuation">.</span>obj_ea<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token string">".strcmp"</span><span class="token punctuation">:</span>
+            <span class="token keyword">return</span> <span class="token boolean">False</span>
+        <span class="token keyword">return</span> <span class="token boolean">True</span>
+
+    <span class="token keyword">def</span> <span class="token function">visit_insn</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> ins<span class="token punctuation">:</span> idaapi<span class="token punctuation">.</span>cinsn_t<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token string">"int"</span><span class="token punctuation">:</span>
+        <span class="token comment"># 找到所有if语句，替换其中表达式</span>
+        <span class="token keyword">if</span> ins<span class="token punctuation">.</span>op <span class="token operator">==</span> idaapi<span class="token punctuation">.</span>cit_if<span class="token punctuation">:</span>
+            <span class="token comment"># print("Find if statement at &#123;&#125;".format(ins.ea))</span>
+            cif <span class="token operator">=</span> ins<span class="token punctuation">.</span>cif  <span class="token comment"># cif_t</span>
+            <span class="token comment"># 判断if中表达式是否满足条件</span>
+            <span class="token keyword">if</span> self<span class="token punctuation">.</span>is_strcmp_expr<span class="token punctuation">(</span>cif<span class="token punctuation">.</span>expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Find !strcmp expr at &#123;&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>cif<span class="token punctuation">.</span>expr<span class="token punctuation">.</span>ea<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                strcmp_expr <span class="token operator">=</span> cif<span class="token punctuation">.</span>expr<span class="token punctuation">.</span>x  <span class="token comment"># if -> ! -> strcmp</span>
+                <span class="token keyword">for</span> carg <span class="token keyword">in</span> strcmp_expr<span class="token punctuation">.</span>a<span class="token punctuation">:</span>
+                    <span class="token comment"># 遍历strcmp函数的参数</span>
+                    <span class="token keyword">if</span> carg<span class="token punctuation">.</span>op <span class="token operator">==</span> idaapi<span class="token punctuation">.</span>cot_obj<span class="token punctuation">:</span>
+                        <span class="token comment"># obj 对应string，根据地址获取字符串</span>
+                        <span class="token keyword">if</span> ida_bytes<span class="token punctuation">.</span>get_strlit_contents<span class="token punctuation">(</span>carg<span class="token punctuation">.</span>obj_ea<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span>decode <span class="token operator">==</span> <span class="token string">'hello'</span><span class="token punctuation">:</span>
+                            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Found hello at &#123;&#125;"</span><span class="token punctuation">.</span><span class="token builtin">format</span><span class="token punctuation">(</span>carg<span class="token punctuation">.</span>obj_ea<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">return</span> <span class="token number">0</span>
+
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    func <span class="token operator">=</span> idaapi<span class="token punctuation">.</span>get_func<span class="token punctuation">(</span>idc<span class="token punctuation">.</span>here<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment"># 获取当前位置的函数</span>
+    cfunc <span class="token operator">=</span> idaapi<span class="token punctuation">.</span>decompile<span class="token punctuation">(</span>func<span class="token punctuation">.</span>start_ea<span class="token punctuation">)</span>  <span class="token comment"># 反编译函数</span>
+    my_visitor <span class="token operator">=</span> MyVisitor<span class="token punctuation">(</span>cfunc<span class="token punctuation">)</span>
+    my_visitor<span class="token punctuation">.</span>apply_to<span class="token punctuation">(</span>cfunc<span class="token punctuation">.</span>body<span class="token punctuation">,</span> <span class="token boolean">None</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>执行脚本得到如下结果：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210721213220.png" srcset="/img/loading.gif" alt=""></p>
+<p>在IDA中检查<code>hello</code>字符串地址，与查找结果相符</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210721213305.png" srcset="/img/loading.gif" alt=""></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本次主要是通过两个小例子熟悉一下<code>idapython</code> 中反编译相关的操作，因为网上这方面的资料过于稀缺，即便有，也都没有解释清楚，要真正理解其用法，还是得自己多实践，多搜索。</p>
+<section class="footnotes"><h2>参考</h2><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://hex-rays.com/blog/hex-rays-decompiler-primer/">Hex-Rays Decompiler primer – Hex Rays</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.fireeye.com/blog/threat-research/2018/04/solving-ad-hoc-problems-with-hex-rays-api.html">Solving Ad-hoc Problems with Hex-Rays API | FireEye Inc</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://hex-rays.com/products/ida/support/ida74_idapython_no_bc695_porting_guide.shtml">Porting from IDAPython 6.x-7.3, to 7.4 (hex-rays.com)</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/security/">security</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/static-analysis/">static_analysis</a>
+                    
+                      <a class="hover-with-bg" href="/tags/idapython/">idapython</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/article/15176.html">
+                        <span class="hidden-mobile">【MinHash, LSH】高维向量的相似度快速计算</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'GentleCP/blog.gentlecp.com');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://www.gentlecp.com" target="_blank" rel="nofollow noopener"><span>主站</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/GentleCP/blog.gentlecp.com" target="_blank" rel="nofollow noopener"><span>Repo</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        京ICP证123456号
+      </a>
+    </span>
+    
+      
+        <span>
+          <a
+            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+            rel="nofollow noopener"
+            class="beian-police"
+            target="_blank"
+          >
+            
+              <span style="visibility: hidden; width: 0">|</span>
+              <img src="/img/police_beian.png" srcset="/img/loading.gif" alt="police-icon"/>
+            
+            <span>浙ICP备19022407号-1</span>
+          </a>
+        </span>
+      
+    
+  </div>
+
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+    
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      $('#local-search-input').on('click', function() {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      });
+      $('#modalSearch').on('shown.bs.modal', function() {
+        $('#local-search-input').focus();
+      });
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+<script src="/js/baidu.js"></script>
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
