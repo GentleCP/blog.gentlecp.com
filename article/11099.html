@@ -219,7 +219,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      832 字
+      810 字
     </span>
   
 
@@ -229,7 +229,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      9
+      8
        分钟
     </span>
   
@@ -270,10 +270,8 @@
             <h1 style="display: none">【idapython】逆向分析脚本实践</h1>
             
             <div class="markdown-body">
-              <h2 id="preface"><a class="markdownIt-Anchor" href="#preface"></a> Preface</h2>
-<p>这两天尝试复现一些二进制分析的论文工作，发现自己对<code>idapython</code>的使用知之甚少，在复现的过程中遇到了不少阻力，因此写一篇<code>idapython</code>使用的实践文章，也算一个小教程，记录一下学习的经历。</p>
-<h2 id="something-you-need-to-know"><a class="markdownIt-Anchor" href="#something-you-need-to-know"></a> Something you need to know</h2>
-<p>这里需要重点说明几点：</p>
+              <h2 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h2><p>这两天尝试复现一些二进制分析的论文工作，发现自己对<code>idapython</code>的使用知之甚少，在复现的过程中遇到了不少阻力，因此写一篇<code>idapython</code>使用的实践文章，也算一个小教程，记录一下学习的经历。</p>
+<h2 id="Something-you-need-to-know"><a href="#Something-you-need-to-know" class="headerlink" title="Something you need to know"></a>Something you need to know</h2><p>这里需要重点说明几点：</p>
 <ol>
 <li><code>idapython</code>是<code>ida pro</code>的一个插件，必须要在<code>ida</code>中使用或者通过<code>ida</code>程序的命令行执行方式运行，并不像普通的<code>python</code>包那样，可以在自己的项目中独立使用，这也意味着它难以用一般的ide(如<code>pycharm</code>)进行代码调试</li>
 <li>虽然在<code>ida7.4</code>之后支持了<code>python3</code>，但目前主流的项目和教程资料仍在使用<code>python2</code>，因此建议还是使用<code>python2</code>做<code>idapython</code>脚本的编写</li>
@@ -282,24 +280,19 @@
 <blockquote>
 <p>之所以强调这几点，是因为看过很多现有的网上教程，大多没有对此说明，而是直接给出样例代码和接口，让人在直接复现的时候经常各种报错，异常。</p>
 </blockquote>
-<h2 id="three-methods-to-run-idapython-scripts"><a class="markdownIt-Anchor" href="#three-methods-to-run-idapython-scripts"></a> Three methods to run IDAPython scripts</h2>
-<p>运行<code>idapython</code>的脚本有三种方法：</p>
+<h2 id="Three-methods-to-run-IDAPython-scripts"><a href="#Three-methods-to-run-IDAPython-scripts" class="headerlink" title="Three methods to run IDAPython scripts"></a>Three methods to run IDAPython scripts</h2><p>运行<code>idapython</code>的脚本有三种方法：</p>
 <ol>
-<li>
-<p>启动ida后，在最下方的命令行窗口直接输入<code>python</code>指令，有点类似<code>ipython</code>的交互模式，但没有提示，多行输入的时候需要手动敲空格，十分难用！！！</p>
-<img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210618203013.png" srcset="/img/loading.gif" style="zoom: 80%;" />
+<li><p>启动ida后，在最下方的命令行窗口直接输入<code>python</code>指令，有点类似<code>ipython</code>的交互模式，但没有提示，多行输入的时候需要手动敲空格，十分难用！！！</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210618203013.png" srcset="/img/loading.gif" style="zoom: 80%;" /></p>
 </li>
-<li>
-<p>以脚本文件的形式上传<code>python</code>脚本文件，相当于在<code>ida</code>中直接运行，该脚本文件仅针对<code>ida</code>打开的二进制文件，适合对单个二进制文件的分析</p>
-<img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210619092315.png" srcset="/img/loading.gif" style="zoom:67%;" />
+<li><p>以脚本文件的形式上传<code>python</code>脚本文件，相当于在<code>ida</code>中直接运行，该脚本文件仅针对<code>ida</code>打开的二进制文件，适合对单个二进制文件的分析</p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210619092315.png" srcset="/img/loading.gif" style="zoom:67%;" /></p>
 </li>
-<li>
-<p>在命令行中通过<code>ida</code>程序直接运行跟上<code>python</code>脚本，需要用到<code>-S</code>等相关参数，可以参考<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="IDAPyhon 脚本批量分析程序 | 0x4C43’s Blog
+<li><p>在命令行中通过<code>ida</code>程序直接运行跟上<code>python</code>脚本，需要用到<code>-S</code>等相关参数，可以参考<sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="IDAPyhon 脚本批量分析程序 | 0x4C43’s Blog
 ">[1]</span></a></sup></p>
 </li>
 </ol>
-<h2 id="idapython-usage"><a class="markdownIt-Anchor" href="#idapython-usage"></a> IDAPython Usage</h2>
-<p><code>idapython</code>提供了三个主要模块，分别是：</p>
+<h2 id="IDAPython-Usage"><a href="#IDAPython-Usage" class="headerlink" title="IDAPython Usage"></a>IDAPython Usage</h2><p><code>idapython</code>提供了三个主要模块，分别是：</p>
 <ul>
 <li><code>idc</code>: 提供IDC中所有的函数功能（例如返回段名、起始地址）</li>
 <li><code>idautils</code>: 提供大量实用函数，能够转换成python的相关对象，如列表</li>
@@ -309,26 +302,21 @@
 ">[2]</span></a></sup>，在遇到某个接口函数使用遗忘的时候也可以用于查询。</p>
 <p>这里提供一些有用的资料（包括参考部分）：</p>
 <ul>
-<li><a href="/download/IDAPython-Book%E7%BF%BB%E8%AF%91byfoyjog.pdf">idapython book翻译本</a></li>
-<li><a target="_blank" rel="noopener" href="https://x3h1n.github.io/2020/06/16/IDA-Python%E6%95%B4%E7%90%86/">IDA Python API整理 | X3h1n</a></li>
+<li><a href="/download/IDAPython-Book翻译byfoyjog.pdf">idapython book翻译本</a></li>
+<li><a target="_blank" rel="noopener" href="https://x3h1n.github.io/2020/06/16/IDA-Python整理/">IDA Python API整理 | X3h1n</a></li>
 </ul>
-<hr />
-<h2 id="idapython-scripts"><a class="markdownIt-Anchor" href="#idapython-scripts"></a> IDAPython Scripts</h2>
-<p>收集、整理<code>IDAPython</code> 相关脚本(包括自己和他人)：</p>
+<hr>
+<h2 id="IDAPython-Scripts"><a href="#IDAPython-Scripts" class="headerlink" title="IDAPython Scripts"></a>IDAPython Scripts</h2><p>收集、整理<code>IDAPython</code> 相关脚本(包括自己和他人)：</p>
 <ul>
-<li>
-<p><a href="https://blog.gentlecp.com/article/12309.html">【IDAPython CTree】反编译代码操作练习 - 求索 (gentlecp.com)</a>: 练习如何利用<code>IDAPython</code> 实现对二进制源码的反编译</p>
+<li><p><a href="https://blog.gentlecp.com/article/12309.html">【IDAPython CTree】反编译代码操作练习 - 求索 (gentlecp.com)</a>: 练习如何利用<code>IDAPython</code> 实现对二进制源码的反编译</p>
 </li>
-<li>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/go2sleep/p/12466753.html">对一批二进制文件执行IDA Python脚本</a></p>
+<li><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/go2sleep/p/12466753.html">对一批二进制文件执行IDA Python脚本</a> :  <code>IDAPython</code> 终端脚本执行的一些说明，包括如何接收命令行参数</p>
 </li>
 </ul>
 <section class="footnotes"><h2>参考</h2><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="http://0x4c43.cn/2018/0803/idapyhon-script-batch-analysis-program/">IDAPyhon 脚本批量分析程序 | 0x4C43’s Blog</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://wonderkun.cc/2020/12/11/idapython%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0/">idapython使用笔记 | wonderkun’s | blog</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://wonderkun.cc/2020/12/11/idapython使用笔记/">idapython使用笔记 | wonderkun’s | blog</a>
 <a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://y4ung.blog.csdn.net/article/details/89421793">IDApython插件编写及脚本批量分析教程_y4ung-CSDN博客</a>
-<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><code>IDAPython</code> 终端脚本执行的一些说明，包括如何接收命令行参数
-<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.cnblogs.com/go2sleep/p/12466753.html">对一批二进制文件执行IDA Python脚本 - go2sleep - 博客园 (cnblogs.com)</a>
-<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
             </div>
             <hr>
             <div>
