@@ -295,7 +295,7 @@
 <p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/20210521183020.png" srcset="/img/loading.gif" alt=""></p>
 <p>按照原博客提供的思路，寻找起始地址的方式有很多，有些过于麻烦，并非是分析的重点，这里先用最简便的方法。</p>
 <h3 id="Analysis-firmware-header-code"><a href="#Analysis-firmware-header-code" class="headerlink" title="Analysis firmware header code"></a>Analysis firmware header code</h3><p>就像<code>linux</code>等常用操作系统需要<code>BIOS</code>将操作系统加载到指定的内存地址上一样，<code>VxWroks</code>在初始化的时候也需要将操作系统的代码加载到指定内存，因此我们可以通过分析初始代码的一些行为来确定初始化地址。在汇编代码的起始处，有一段针对<code>r1,r3</code>寄存器的操作，原博客对这段代码做了解释，这里同样粘一下：</p>
-<p><img src="C:\Users\GentleCP\AppData\Roaming\Typora\typora-user-images\image-20210521190826938.png" srcset="/img/loading.gif" alt="image-20210521190826938"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/GentleCP/ImgUrl/img/20220227094936.png" srcset="/img/loading.gif" alt=""></p>
 <blockquote>
 <p>原文中应该是笔误，跳转地址是<code>0x1CD94</code></p>
 </blockquote>
